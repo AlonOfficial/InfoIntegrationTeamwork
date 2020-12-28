@@ -132,6 +132,7 @@
 
       //add();
     }
+    //公安-户口
     function addhukou() {
       $(document).ready(function () {
         $.get('source/hukou.txt', function (theData) {
@@ -149,7 +150,8 @@
 
             var request = db.transaction(['hukou'], 'readwrite')
               .objectStore('hukou')
-              .add({ name: temp[0], id: temp[1], gender: temp[2], birthday: temp[3], marriage: temp[4], polistatus: temp[5], birthplace: temp[6], address: temp[7] });
+              .add({ name: temp[0], id: parseInt(temp[1]), gender: temp[2], birthday: temp[3], marriage: temp[4], 
+                polistatus: temp[5], birthplace: temp[6], address: temp[7] });
 
           };
           // $('#fileData').html(theList);
@@ -158,6 +160,7 @@
     }
 
     //storename,sid,sname,saddress,smanager,scontactnum,sworkernum,sguangchang,sgongyuan,sqicai
+    //社区
     function addshequ() {
       $(function () {
         //通过使用ajax()，可以获得xml文件并将数据发送到一个自定义的解析函数中
@@ -174,7 +177,7 @@
         //jquery的find函数定位xml中的节点
         //each循环中，将xml的值赋给遍历，并使用这些遍历构建标记
         $(xml).find('shequ').each(function () {
-          var sid = $(this).find('sid').text()
+          var sid = parseInt($(this).find('sid').text())
           var sname = $(this).find('sname').text()
           var saddress = $(this).find('saddress').text()
           var smanager = $(this).find('smanager').text()
@@ -193,7 +196,7 @@
         })
       }
     }
-
+    //社区-老人
     function addshequlaoren() {
       $(function () {
         //通过使用ajax()，可以获得xml文件并将数据发送到一个自定义的解析函数中
@@ -210,8 +213,8 @@
         //jquery的find函数定位xml中的节点
         //each循环中，将xml的值赋给遍历，并使用这些遍历构建标记
         $(xml).find('slaoren').each(function () {
-          var sid = $(this).find('sid').text()
-          var id = $(this).find('id').text()
+          var sid = parseInt($(this).find('sid').text())
+          var id = parseInt($(this).find('id').text())
           var children = $(this).find('children').text()
           var spouse = $(this).find('spouse').text()
           var others = $(this).find('others').text()
