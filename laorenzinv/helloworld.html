@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8"/>
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <title>老人子女入口</title>
+    <script src="../js/jquery-3.5.1.min.js"></script>
+
+    <style>
+
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+
+        a:hover {
+            color: red;
+        }
+
+        .mapEarth {
+            position: absolute;
+            width: 80%;
+            height: 100%;
+            display: inline-block;
+            float: right;
+            display: inline-block;
+        }
+
+        .menu {
+            float: left;
+            width: 20%;
+            height: 100%;
+        }
+
+        .menu div {
+            list-style: none;
+            height: 40px;
+            background-color: #F7F7F7;
+            text-align: center;
+            border: 0.2px solid #DFDFDF;
+
+        }
+
+        .fontWeight {
+            font-weight: 800;
+            color: black;
+        }
+
+        a{
+            font-size: 14px;
+            font-family: Arial, "宋体";
+            line-height: 40px;
+            text-decoration: none;
+            color: #0a001f;
+        }
+    </style>
+</head>
+
+
+<body>
+<script type="text/javascript"> $(function () {
+    $("#menu").find("a").click(function () {
+        var index = $(this).index();
+        $(document).find('a').removeClass('fontWeight');
+        $(this).addClass("fontWeight");
+    });
+});
+</script>
+
+<div class="all">
+    <div class="menu" id="menu">
+        <div><a href="zhongxin.html" target="shouye">个人中心</a></div>
+        <div><a href="jiankang.html" target="shouye">健康档案</a></div>
+        <div><a href="shequfuwu.html" target="shouye">社区服务</a></div>
+        <div><a href="yanglaoyuan.html" target="shouye">养老院查询</a></div>
+        <div><a href="guiji.html" target="shouye">定位与报警</a></div>
+    </div>
+    <iframe src="zhongxin.html" class="mapEarth" name="shouye"></iframe>
+</div>
+</body>
+</html>
