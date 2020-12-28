@@ -50,11 +50,11 @@
     request.onsuccess = function (event) {
       db = event.target.result;
       console.log('数据库打开成功');
-
+      addhukou();
       addshequ();
       addshequlaoren();
     }
-    request.onupgradeneeded = function (e) {
+    request.onupgradeneeded = function (event) {
       db = event.target.result;
       console.log("版本变化");
       if (!db.objectStoreNames.contains('shequ')) {
@@ -63,10 +63,37 @@
       if (!db.objectStoreNames.contains('shequlaoren')) {
         objectStore = db.createObjectStore('shequlaoren', { keyPath: 'id' });
       };
+      if (!db.objectStoreNames.contains('hukou')) {
+        objectStore = db.createObjectStore('hukou', { keyPath: 'id' });
+      };
       //add();
     }
 
+    function addhukou() {
+      $(document).ready(function () {
+        $.get('source/hukou.txt', function (theData) {
+          console.log(theData);
+          theItems = theData.split('\n');
+          //test = theItems[1].split(' ');
+          var theList = '';
+          var theListItem;
+          //从第二行开始读入数据
+          for (i = 1; i < theItems.length; i++) {
+            temp = theItems[i].split(' ');
+            // var name = temp[0];
+            // var id = temp[1]; 
+            // var birthday = 
 
+            var request = db.transaction(['hukou'], 'readwrite')
+              .objectStore('hukou')
+              .add({ name: temp[0], id: temp[1], gender: temp[2], birthday: temp[3], marriage: temp[4], polistatus: temp[5], birthplace: temp[6], address: temp[7] });
+
+          };
+          // $('#fileData').html(theList);
+        });
+      });
+    }
+    
     //storename,sid,sname,saddress,smanager,scontactnum,sworkernum,sguangchang,sgongyuan,sqicai
     function addshequ() {
       $(function () {
