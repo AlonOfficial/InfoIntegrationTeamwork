@@ -12,6 +12,8 @@
   <title>养老综合平台</title>
   <!-- <script src="Build/Cesium/Cesium.js"></script> -->
   <script src="js/jquery-3.5.1.min.js"></script>
+  <script src="js/xlsx.core.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-csv/1.0.4/jquery.csv.min.js"></script>
 
   <style>
     body,
@@ -107,6 +109,10 @@
       addyanglaoyuan();
       addminzhengyanglaoyuan();
       addyanglaoyuanlaoren();
+      //银行数据导入
+      addbank();
+      //老人坐标数据导入
+      addlatlng();
     }
     request.onupgradeneeded = function (e) {
       db = event.target.result;
@@ -129,14 +135,19 @@
       if (!db.objectStoreNames.contains('yanglaoyuanlaoren')) {
         objectStore = db.createObjectStore('yanglaoyuanlaoren', { keyPath: 'id' });
       };
-
+      if (!db.objectStoreNames.contains("bank")) {
+        objectStore = db.createObjectStore("bank", { keyPath: 'id' });
+      };
+      if (!db.objectStoreNames.contains("latlng")) {
+        objectStore = db.createObjectStore("latlng", { keyPath: 'id' });
+      };
       //add();
     }
     //公安-户口
     function addhukou() {
       $(document).ready(function () {
         $.get('source/hukou.txt', function (theData) {
-          console.log(theData);
+          //console.log(theData);
           theItems = theData.split('\n');
           //test = theItems[1].split(' ');
           var theList = '';
@@ -308,6 +319,79 @@
         // }
 
     //add();
+
+    //银行-财产数据
+    function addbank(){
+      $(document).ready(function() {
+          //使用$.get()方法导入和解析CSV文件
+          $.get("source/bank.csv", function(theData) {
+              //$.csv.toObjects()将CSV数据转换为一个名为data的对象
+              var data = $.csv.toObjects(theData);
+              for(var row in data){
+                var count=0;
+                var line = [];
+                for(var item in data[row]){
+                  if(count==0){
+                    count += 1;
+                    continue;
+                  }
+                  line[count] = data[row][item];
+                  count += 1;
+                }
+                var request = db.transaction(['bank'], 'readwrite')
+                  .objectStore("bank")
+                  .add({ id: line[1], ball: line[2], bin: line[3], bout: line[4]});
+              }
+              //var theHtml = createTable(data);
+              //$('#theResult').html(theHtml);
+          });
+      });
+    }
+
+    //csv格式生成html表格
+    function createTable(data) {
+        var html = '';
+        
+        if(data[0].constructor === Object) {
+            html += '<tr>\r\n';
+            for(var item in data[0]) {
+                html += '<th>' + item + '</th>\r\n';
+            }
+            html += '</tr>\r\n';
+
+            for(var row in data) {
+                html += '<tr>\r\n';
+                for(var item in data[row]) {
+                    html += '<td>' + data[row][item] + '</td>\r\n';
+                }
+                html += '</tr>\r\n';
+            }
+        }
+        return html;
+    }
+  
+    //老人经纬度
+    function addlatlng(){     
+      $(document).ready(function() {
+          //使用$.get()方法导入和解析CSV文件
+          $.get("source/spot.csv", function(theData) {
+              //$.csv.toObjects()将CSV数据转换为一个名为data的对象
+              var data = $.csv.toObjects(theData);
+              for(var row in data){
+                var count=0;
+                var line = [];
+                console.log(data[row]);
+                for(var item in data[row]){
+                  line[count] = data[row][item];
+                  count += 1;
+                }
+                var request = db.transaction(['latlng'], 'readwrite')
+                  .objectStore("latlng")
+                  .add({ id: line[0], lng: line[1], lat: line[2]});
+              }
+          });
+      });
+    }
   </script>
 
 </body>
