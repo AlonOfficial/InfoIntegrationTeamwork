@@ -113,6 +113,7 @@
       addbank();
       //老人坐标数据导入
       addlatlng();
+      addbingli();
     }
     request.onupgradeneeded = function (e) {
       db = event.target.result;
@@ -140,6 +141,9 @@
       };
       if (!db.objectStoreNames.contains("latlng")) {
         objectStore = db.createObjectStore("latlng", { keyPath: 'id' });
+      };
+      if (!db.objectStoreNames.contains("bingli")) {
+        objectStore = db.createObjectStore("bingli", { keyPath: 'id' });
       };
       //add();
     }
@@ -306,20 +310,6 @@
       });
     }
 
-        // var request = db.transaction(['shequ'], 'readwrite')
-        //   .objectStore('shequ')
-        //   .add({ sid: sid, sname: '西关社区', saddress: "湖北省武汉市硚口区沿河大道418号" });
-
-        // request.onsuccess = function (event) {
-        //   console.log('数据写入成功');
-        // };
-
-        // request.onerror = function (event) {
-        //   console.log('数据写入失败');
-        // }
-
-    //add();
-
     //银行-财产数据
     function addbank(){
       $(document).ready(function() {
@@ -340,7 +330,7 @@
                 }
                 var request = db.transaction(['bank'], 'readwrite')
                   .objectStore("bank")
-                  .add({ id: line[1], ball: line[2], bin: line[3], bout: line[4]});
+                  .add({ id: parseInt(line[1]), ball: line[2], bin: line[3], bout: line[4]});
               }
               //var theHtml = createTable(data);
               //$('#theResult').html(theHtml);
@@ -392,6 +382,32 @@
           });
       });
     }
+
+    //病历数据
+    function addbingli() {
+      $(document).ready(function () {
+        $.get('source/bingli.txt', function (theData) {
+          //console.log(theData);
+          theItems = theData.split('\n');
+          //test = theItems[1].split(' ');
+          //从第二行开始读入数据
+          for (i = 1; i < theItems.length; i++) {
+            temp = theItems[i].split(',');
+            // var name = temp[0];
+            // var id = temp[1]; 
+            // var birthday = 
+
+            var request = db.transaction(['bingli'], 'readwrite')
+              .objectStore('bingli')
+              .add({ name: temp[0], id: parseInt(temp[1]), gender: temp[2], birthday: temp[3], yibaocard: temp[5], 
+                examday: temp[6],hospital: temp[7], ifill: temp[8], ill: temp[9] });
+
+          };
+          // $('#fileData').html(theList);
+        });
+      });
+    }
+
   </script>
 
 </body>
