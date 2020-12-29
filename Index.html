@@ -113,7 +113,10 @@
       addbank();
       //老人坐标数据导入
       addlatlng();
+      //病历数据导入
       addbingli();
+      //创建空请求列表
+      addqingqiu();
     }
     request.onupgradeneeded = function (e) {
       db = event.target.result;
@@ -144,6 +147,12 @@
       };
       if (!db.objectStoreNames.contains("bingli")) {
         objectStore = db.createObjectStore("bingli", { keyPath: 'id' });
+      };
+      if (!db.objectStoreNames.contains("shequqingqiu")) {
+        objectStore = db.createObjectStore("shequqingqiu", { keyPath: 'sid' });
+      };
+      if (!db.objectStoreNames.contains("yanglaoyuanqingqiu")) {
+        objectStore = db.createObjectStore("yanglaoyuanqingqiu", { keyPath: 'yid' });
       };
       //add();
     }
@@ -406,6 +415,18 @@
           // $('#fileData').html(theList);
         });
       });
+    }
+
+    //请求列表
+    function addshequqingqiu(){
+      var request = db.transaction(['hequqingqiu'], 'readwrite')
+              .objectStore('hequqingqiu')
+              .add({ sid,id, name,leixing,isok});
+    }
+    function addyanglaoyuanqingqiu(){
+      var request = db.transaction(['yanglaoyuanqingqiu'], 'readwrite')
+              .objectStore('yanglaoyuanqingqiu')
+              .add({ yid, id,name,leixing,isok});
     }
 
   </script>
