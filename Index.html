@@ -118,7 +118,7 @@
       //创建空请求列表
       addqingqiu();
     }
-    request.onupgradeneeded = function (e) {
+    request.onupgradeneeded = function (event) {
       db = event.target.result;
       console.log("版本变化");
       if (!db.objectStoreNames.contains('hukou')) {
@@ -149,10 +149,14 @@
         objectStore = db.createObjectStore("bingli", { keyPath: 'id' });
       };
       if (!db.objectStoreNames.contains("shequqingqiu")) {
-        objectStore = db.createObjectStore("shequqingqiu", { keyPath: 'sid' });
+        objectStore = db.createObjectStore("shequqingqiu", { autoIncrement: true });
+        objectStore.createIndex('sid', 'sid', { unique: false });
+        objectStore.createIndex('id', 'id', { unique: false });
       };
       if (!db.objectStoreNames.contains("yanglaoyuanqingqiu")) {
-        objectStore = db.createObjectStore("yanglaoyuanqingqiu", { keyPath: 'yid' });
+        objectStore = db.createObjectStore("yanglaoyuanqingqiu", { autoIncrement: true });
+        objectStore.createIndex('yid', 'yid', { unique: false });
+        objectStore.createIndex('id', 'id', { unique: false });
       };
       //add();
     }
