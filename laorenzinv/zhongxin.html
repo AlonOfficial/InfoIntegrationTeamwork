@@ -18,6 +18,86 @@
 
 
 <body>
+  <div class = "all">
+    <h1 align = "center" >您的基本信息</h1>
+    <div class = "data" >
+      <p id = "01" style = "font-size: 30px;"></p>
+      <p id = "02" style = "font-size: 30px;"></p>
+      <p id = "03" style = "font-size: 30px;"></p>
+      <p id = "04" style = "font-size: 30px;"></p>
+    </div>
+  </div>
+    <script>
+      //获取登录老人id
+      var id = 11;
+
+
+        var indexedDB = window.indexedDB;
+        var db;
+        if (!indexedDB) {
+          window.alert("你的浏览器不支持IndexedDB");
+        }
+
+        //打开数据库
+        var request = window.indexedDB.open("yanglao", 1);
+        request.onerror = function (event) {
+          console.log('数据库打开报错');
+        };
+
+        request.onsuccess = function (event) {
+          db = event.target.result;
+          readandshow();
+         
+          console.log('数据库打开成功');
+        }
+
+        request.onupgradeneeded = function (e) {
+         db = event.target.result;
+         console.log("版本变化");
+      
+       }
+        
+
+       //读取老人数据以表格形式表现
+       function readandshow(){
+        
+          var res = db.transaction(['hukou'],'readwrite').objectStore('hukou').get(id);
+            res.onerror = function(event) {
+             console.log('事务失败');
+          };
+
+          res.onsuccess = function( event) {
+             if (res.result) {
+               console.log('name: ' + res.result.name);
+               $(document).ready(function() {
+                 //基本信息
+                 $("#01").text("姓名："+res.result.name+"       "+"性别："+res.result.gender+"      "+"生日："+res.result.birthday);
+                 $("#02").text("政治面貌"+res.result.polistatus+"      "+"籍贯："+res.result.birthplace+"      "+"婚姻状况："+res.result.marriage);
+                 //判断是否独居
+                 if(id == 5 || id==10 || id==11 || id==13 || id==16 || id==19 || id==20){
+                  if(res.result.others==0){
+                     $("#04").text("居住状况：社区独居");
+                  }
+                  else{
+                     $("#04").text("居住状况：社区且有家人陪同");
+                  }
+                   
+                
+                 }
+                 else{
+                  $("#04").text("居住状况：养老院居住");
+                 }
+                 
+               });
+             
+             } else {
+               console.log('未获得数据记录');
+             }
+          };
+       }
+
+
+    </script>
 
 </body>
 </html>
