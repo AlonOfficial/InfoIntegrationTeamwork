@@ -31,6 +31,7 @@
 
 
     <script>
+        var id = parseInt(sessionStorage.getItem("id"));
         var indexedDB = window.indexedDB;
         var db;
         if (!indexedDB) {
@@ -60,7 +61,7 @@
        //读取老人数据以表格形式表现
        function readandshow(){
         
-          var res = db.transaction(['bingli'],'readwrite').objectStore('bingli').get(1);
+          var res = db.transaction(['bingli'],'readwrite').objectStore('bingli').get(id);
             res.onerror = function(event) {
              console.log('事务失败');
           };

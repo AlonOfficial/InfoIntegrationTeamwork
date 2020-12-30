@@ -16,7 +16,7 @@
     "address": "湖北省武汉市蔡甸区九真山森林公园西南200米",
     "fuzeren": "李四",
     "phone": "1233341",
-    "cost": 5000,
+    "cost": 8000,
     "bednum": 300,
     "personnum": 123,
     "area": "8800平方米"
@@ -28,7 +28,7 @@
     "fuzeren": "王五",
     "phone": "7654321",
     "cost": 3000,
-    "bednum": 1000,
+    "bednum": 3000,
     "personnum": 795,
     "area": "29800平方米"
   }
