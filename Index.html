@@ -116,9 +116,9 @@
       //病历数据导入
       addbingli();
       //创建空请求列表
-      addqingqiu();
+      //addqingqiu();
     }
-    request.onupgradeneeded = function (e) {
+    request.onupgradeneeded = function (event) {
       db = event.target.result;
       console.log("版本变化");
       if (!db.objectStoreNames.contains('hukou')) {
@@ -129,6 +129,7 @@
       };
       if (!db.objectStoreNames.contains('shequlaoren')) {
         objectStore = db.createObjectStore('shequlaoren', { keyPath: 'id' });
+        objectStore.createIndex('sid', 'sid', { unique: false });
       };
       if (!db.objectStoreNames.contains('yanglaoyuan')) {
         objectStore = db.createObjectStore('yanglaoyuan', { keyPath: 'yid' });
@@ -138,6 +139,7 @@
       };
       if (!db.objectStoreNames.contains('yanglaoyuanlaoren')) {
         objectStore = db.createObjectStore('yanglaoyuanlaoren', { keyPath: 'id' });
+        objectStore.createIndex('yid', 'yid', { unique: false });
       };
       if (!db.objectStoreNames.contains("bank")) {
         objectStore = db.createObjectStore("bank", { keyPath: 'id' });
@@ -149,10 +151,14 @@
         objectStore = db.createObjectStore("bingli", { keyPath: 'id' });
       };
       if (!db.objectStoreNames.contains("shequqingqiu")) {
-        objectStore = db.createObjectStore("shequqingqiu", { keyPath: 'sid' });
+        objectStore = db.createObjectStore("shequqingqiu", { autoIncrement: true });
+        objectStore.createIndex('sid', 'sid', { unique: false });
+        objectStore.createIndex('id', 'id', { unique: false });
       };
       if (!db.objectStoreNames.contains("yanglaoyuanqingqiu")) {
-        objectStore = db.createObjectStore("yanglaoyuanqingqiu", { keyPath: 'yid' });
+        objectStore = db.createObjectStore("yanglaoyuanqingqiu", { autoIncrement: true });
+        objectStore.createIndex('yid', 'yid', { unique: false });
+        objectStore.createIndex('id', 'id', { unique: false });
       };
       //add();
     }
