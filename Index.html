@@ -116,7 +116,7 @@
       //病历数据导入
       addbingli();
       //创建空请求列表
-      addqingqiu();
+      //addqingqiu();
     }
     request.onupgradeneeded = function (event) {
       db = event.target.result;
@@ -129,6 +129,7 @@
       };
       if (!db.objectStoreNames.contains('shequlaoren')) {
         objectStore = db.createObjectStore('shequlaoren', { keyPath: 'id' });
+        objectStore.createIndex('sid', 'sid', { unique: false });
       };
       if (!db.objectStoreNames.contains('yanglaoyuan')) {
         objectStore = db.createObjectStore('yanglaoyuan', { keyPath: 'yid' });
@@ -138,6 +139,7 @@
       };
       if (!db.objectStoreNames.contains('yanglaoyuanlaoren')) {
         objectStore = db.createObjectStore('yanglaoyuanlaoren', { keyPath: 'id' });
+        objectStore.createIndex('yid', 'yid', { unique: false });
       };
       if (!db.objectStoreNames.contains("bank")) {
         objectStore = db.createObjectStore("bank", { keyPath: 'id' });
