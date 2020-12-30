@@ -32,14 +32,22 @@
 
 
   <script>
+    var mname;
+    
     //获取登录老人id，这个需要实现登录功能将id传过来
+    //$("input").click(function (e) {
+    $("input").off("click").on("click", function (e) {
+      mid = $(e.target).attr("id");
+      mname = document.getElementById(mid).value;
+    });
+
     var id = 1;
     var db;
     var indexedDB = window.indexedDB;
-      //var db;
-      if (!indexedDB) {
-        window.alert("你的浏览器不支持IndexedDB");
-      }
+    //var db;
+    if (!indexedDB) {
+      window.alert("你的浏览器不支持IndexedDB");
+    }
     //打开数据库
     var request = window.indexedDB.open("yanglao", 1);
     request.onerror = function (event) {
@@ -83,32 +91,28 @@
 
             //社区
             var mid;
-            $("input").off("click").on("click",function(e) {
-              mid = $(e.target).attr("id");
-              var mname = document.getElementById(mid).value;
-              //获取老人对应社区的sid
-              var res2 = db.transaction(['shequlaoren'], 'readwrite').objectStore('shequlaoren')
-                .get(id);
-              res2.onerror = function (event) {
-                console.log('读入失败');
+
+            //获取老人对应社区的sid
+            var res2 = db.transaction(['shequlaoren'], 'readwrite').objectStore('shequlaoren')
+              .get(id);
+            res2.onerror = function (event) {
+              console.log('读入失败');
+            };
+            res2.onsuccess = function (event) {
+              var sid = res2.result.sid;
+              //写入请求列表
+              var res3 = db.transaction(['shequqingqiu'], 'readwrite').objectStore('shequqingqiu').add({ sid: sid, id: id, name: name, leixing: mname, isok: 0 });
+
+              res3.onerror = function (event) {
+                console.log('写入失败');
               };
-              res2.onsuccess = function (event) {
-                var sid = res2.result.sid;
-                //写入请求列表
-                var res3 = db.transaction(['shequqingqiu'], 'readwrite').objectStore('shequqingqiu').add({ sid: sid, id: id, name: name, leixing: mname, isok: 0 });
-
-                res3.onerror = function (event) {
-                  console.log('写入失败');
-                };
-                res3.onsuccess = function (event) {
-                  console.log('写入成功');
+              res3.onsuccess = function (event) {
+                console.log('写入成功');
 
 
-                };
               };
-              alert("您当前居住于社区中，我们已联系社区志愿者尽快为您" + mname);
-            });
-
+            };
+            alert("您当前居住于社区中，我们已联系社区志愿者尽快为您" + mname);
 
           }
 
@@ -116,34 +120,28 @@
             //养老院 
             console.log("进入养老院循环");
             var mid;
-            //$("input").click(function (e) {
-            $("input").off("click").on("click",function(e) {
-              console.log("1");
-              mid = $(e.target).attr("id");
-              var mname = document.getElementById(mid).value;
-              //获取老人对应养老院的yid
-              var res2 = db.transaction(['yanglaoyuanlaoren'], 'readwrite').objectStore('yanglaoyuanlaoren')
-                .get(id);
-              res2.onerror = function (event) {
-                console.log('读入失败');
+
+            //获取老人对应养老院的yid
+            var res2 = db.transaction(['yanglaoyuanlaoren'], 'readwrite').objectStore('yanglaoyuanlaoren')
+              .get(id);
+            res2.onerror = function (event) {
+              console.log('读入失败');
+            };
+            res2.onsuccess = function (event) {
+              console.log("2");
+              var yid = res2.result.yid;
+              //写入请求列表
+              var res3 = db.transaction(['yanglaoyuanqingqiu'], 'readwrite').objectStore('yanglaoyuanqingqiu').add({ yid: yid, id: id, name: name, leixing: mname, isok: 0 });
+
+              res3.onerror = function (event) {
+                console.log('写入失败');
               };
-              res2.onsuccess = function (event) {
-                console.log("2");
-                var yid = res2.result.yid;
-                //写入请求列表
-                var res3 = db.transaction(['yanglaoyuanqingqiu'], 'readwrite').objectStore('yanglaoyuanqingqiu').add({ yid: yid, id: id, name: name, leixing: mname, isok: 0 });
+              res3.onsuccess = function (event) {
+                console.log('写入成功');
 
-                res3.onerror = function (event) {
-                  console.log('写入失败');
-                };
-                res3.onsuccess = function (event) {
-                  console.log('写入成功');
-
-                };
               };
-              alert("您当前居住于养老院中，我们已联系养老院尽快为您" + mname);
-
-            });
+            };
+            alert("您当前居住于养老院中，我们已联系养老院尽快为您" + mname);
 
           }
 
