@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- Use correct character set. -->
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <!-- Tell IE to use the latest, best version. -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
-    />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
     <title>社区入口</title>
     <script src="../js/jquery-3.5.1.min.js"></script>
 
     <style>
-
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
         }
@@ -53,7 +52,7 @@
             color: black;
         }
 
-        a{
+        a {
             font-size: 14px;
             font-family: Arial, "宋体";
             line-height: 40px;
@@ -65,25 +64,28 @@
 
 
 <body>
-<script type="text/javascript"> $(function () {
-    $("#menu").find("a").click(function () {
-        var index = $(this).index();
-        $(document).find('a').removeClass('fontWeight');
-        $(this).addClass("fontWeight");
-    });
-});
-</script>
+    <script type="text/javascript">
+        var sid = 1;
+        $(function () {
+            $("#menu").find("a").click(function () {
+                var index = $(this).index();
+                $(document).find('a').removeClass('fontWeight');
+                $(this).addClass("fontWeight");
+            });
+        });
+    </script>
 
-<div class="all">
-    <div class="menu" id="menu">
-        <div><a href="shequ.html" target="shouye">社区信息</a></div>
-        <div><a href="qingqiu.html" target="shouye">老人请求</a></div>
-        <div><a href="laoren.html" target="shouye">老人管理</a></div>
-        <div><a href="dengji.html" target="shouye">老人登记</a></div>
-        <div><a href="jiankong.html" target="shouye">监控与报警</a></div>
-        <div><a href="../Index.html" target="_self">返回</a></div>
+    <div class="all">
+        <div class="menu" id="menu">
+            <div><a href="shequ.html" target="shouye">社区信息</a></div>
+            <div><a href="qingqiu.html" target="shouye">老人请求</a></div>
+            <div><a href="laoren.html" target="shouye">老人管理</a></div>
+            <div><a href="dengji.html" target="shouye">老人登记</a></div>
+            <div><a href="jiankong.html" target="shouye">监控与报警</a></div>
+            <div><a href="../Index.html" target="_self">返回</a></div>
+        </div>
+        <iframe src="shequ.html" class="mapEarth" name="shouye"></iframe>
     </div>
-    <iframe src="shequ.html" class="mapEarth" name="shouye"></iframe>
-</div>
 </body>
+
 </html>
