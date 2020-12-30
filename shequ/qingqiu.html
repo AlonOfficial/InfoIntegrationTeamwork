@@ -18,6 +18,128 @@
 
 
 <body>
+    <div id="tableEntry">
 
+    </div>
+    <script>
+    var sid = parseInt(sessionStorage.getItem("sid"));
+    console.log(sid);
+
+    tableEntry.innerHTML = '';
+    var indexedDB = window.indexedDB;
+
+
+    //打开社区老人库
+    var db;
+    var request1 = window.indexedDB.open("yanglao", 1);
+    request1.onsuccess = function (event) {
+        db = event.target.result;
+        console.log('数据库打开成功');
+        readandshow();
+    }
+    request1.onupgradeneeded = function (event) {
+        db = event.target.result;
+        console.log("版本变化");
+    }
+
+
+
+    //读取老人请求数据
+    function readandshow() {
+        //核心遍历查找语句，使用了index与cursor遍历
+        var request = db.transaction('shequqingqiu', "readonly").objectStore('shequqingqiu').index('sid').openCursor(sid);
+        //双数组解决异步问题
+        var i = 0;
+        var j = 0;
+        var leixing = new Array();
+        var primaryKey = new Array();
+        request.onerror = function (event) {
+            console.log('事务失败');
+        };
+
+        request.onsuccess = function (event) {
+            var cursor = event.target.result;
+           
+            if (cursor) {
+                leixing[i] = cursor.value.leixing;
+                primaryKey[i] = cursor.primaryKey;
+                var tableRow = document.createElement('div');
+                
+                var request1 = db.transaction('hukou', "readonly").objectStore('hukou').get(cursor.value.id);
+                request1.onerror = function (event) {
+                    console.log('事务失败');
+                };
+
+                request1.onsuccess = function (event) {
+                    result = event.target.result;
+                    //注意请求id为数据库自动生成的primaryKey
+                    tableRow.id = primaryKey[j];
+                    tableRow.innerHTML = 
+                    '<td>' + (j+1) + '</td>'
+                    + '<td>' + result.name + '</td>'
+                    + '<td>' + result.gender + '</td>'
+                    + '<td>' + result.birthday + '</td>'
+                    + '<td>' + result.address + '</td>'
+                    + '<td>' + leixing[j] + '</td>'
+
+                    + '<input type="submit" value="完成" onclick=deleteQingQiu('+primaryKey[j]+') >';
+                    //console.log(cursor.primaryKey);
+                    j +=1;
+                    tableEntry.appendChild(tableRow);
+
+                }
+                i +=1;
+                cursor.continue();console.log(cursor);
+            }
+            
+
+            // if (request.result) {
+            //     data = event.target.result;
+
+            //     console.log(data);
+            //     data.continue();
+            //     console.log(data);
+            //     data = event.target.result;
+            //     console.log(data);
+
+            //     // var cursor = request.result;
+
+            //     // if (cursor) {
+            //     //     console.log(cursor.key);
+            //     //     dataList[i] = cursor.value;
+            //     //     console.log(dataList[i].id);
+            //     //     i++;
+            //     //     cursor.continue();
+            //     // }
+
+            //     // console.log('name: ' + result.sname);
+            //     // $(document).ready(function () {
+            //     //     //基本信息
+            //     //     $("#01").text("姓名：" + result.sname + "       " + "地址：" + result.saddress);
+            //     //     $("#02").text("管理员: " + result.smanager + "      " + "电话：" + result.scontactnum);
+            //     //     $("#03").text("员工数: " + result.sworkernum);
+
+
+            //     // });
+
+            // } else {
+            //     console.log('未获得数据记录');
+            // }
+        };
+    }
+    function deleteQingQiu(key)
+    {
+        document.getElementById(key).remove();
+
+        var request = db.transaction('shequqingqiu', "readwrite").objectStore('shequqingqiu').delete(key);
+        request.onerror = function (event) {
+            console.log('事务失败');
+        };
+
+        request.onsuccess = function (event) {
+            console.log('删除成功');
+        }
+    }
+</script>
 </body>
 </html>
