@@ -34,14 +34,15 @@
   <script>
     var mname;
     
-    //获取登录老人id，这个需要实现登录功能将id传过来
+    var id = parseInt(sessionStorage.getItem("id"));
+    
     //$("input").click(function (e) {
     $("input").off("click").on("click", function (e) {
       mid = $(e.target).attr("id");
       mname = document.getElementById(mid).value;
     });
 
-    var id = 1;
+    
     var db;
     var indexedDB = window.indexedDB;
     //var db;

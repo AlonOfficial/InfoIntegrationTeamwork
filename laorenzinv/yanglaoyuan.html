@@ -29,7 +29,7 @@
 <script>
    
 //获取老人id
-var id =1;
+var id = parseInt(sessionStorage.getItem("id"));
 //获取所有需要的数据
 var db;
 var lastbed = new Array;
@@ -219,7 +219,10 @@ getData = function(){
 
   
   
-  setInterval("tuijian()","2000");
+  setTimeout(() => {
+    tuijian();
+    
+  }, 500);
           
 
 
