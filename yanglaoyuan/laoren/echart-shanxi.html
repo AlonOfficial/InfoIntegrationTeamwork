@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>饼图</title>
+</head>
+<body>
+<div id="main" style="width: 1000px;height:500px;"></div>
+<script src="../../js/echarts.min.js"></script>
+<script>
+
+    var NursingId = 1;
+    var numMale =0;
+    var numFemale =0;
+    var indexedDB = window.indexedDB;
+    var db;
+    if (!indexedDB) {
+        window.alert("你的浏览器不支持IndexedDB");
+    }
+
+//打开数据库
+    var request = window.indexedDB.open("yanglao", 1);
+    request.onerror = function (event) {
+        console.log('数据库打开报错');
+    };
+    request.onupgradeneeded = function (e) {
+        db = event.target.result;
+        console.log("版本变化");
+
+    }
+    request.onsuccess = function (event) {
+        db = event.target.result;
+        var store = db.transaction(['yanglaoyuanlaoren'], 'readonly').objectStore('yanglaoyuanlaoren');
+        var c = store.openCursor();//打开游标
+
+        c.onsuccess = function (e) {//成功执行回调
+            var cursor = e.target.result;
+            if (cursor) {//如果存在
+                var older = cursor.value;
+                if (older.yid == NursingId) {
+
+                    if(older.gender=='男'){
+                        numMale+=1;
+                    }
+                    else{
+                        numFemale+=1;
+                    }
+                }
+                cursor.continue();//继续下一个
+            }
+
+        }
+    }
+
+    function grahPie() {
+        var myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据 放在option对象里
+        var option = {
+            title: {
+                text: '养老院老人性别分布'
+            },
+            tooltip: {},
+            series: [{
+                type: 'pie',
+                data: [
+                    {value:numMale, name:'男'},
+                    {value:numFemale, name:'女'}
+                ]
+            }]
+        };
+        // 基于准备好的dom，初始化echarts实例
+        myChart.setOption(option);
+    }
+
+
+    setTimeout(() => {
+        grahPie();
+    }, 500);
+
+
+</script>
+</body>
+</html>

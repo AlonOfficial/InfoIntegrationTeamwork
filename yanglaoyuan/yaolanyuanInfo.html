@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>养老院信息</title>
-    <script src="../../js/jquery-3.5.1.min.js"></script>
+    <script src="../js/jquery-3.5.1.min.js"></script>
 </head>
 <style>
 
@@ -37,9 +37,10 @@
 
 <script>
 
+    //获取登录老人id
+    // var NursingId = parseInt(sessionStorage.getItem("id"));
+    var NursingId = 3;
 
-    //获取养老院信息id
-    var NursingId= 1;
     searchInfo_odler_request();
     //向服务器发送请求
    function searchInfo_odler_request() {
