@@ -1,112 +1,75 @@
-<!doctype html>
-<html lang="zh-CN">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-   
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>简单路径</title>
-    <style>
-    html,
-    body,
-    #container {
-        width: 100%;
-        height: 100%;
-        margin: 0px;
-    }
-    </style>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+
+    <title>Show tails</title>
+    <script type="text/javascript" src="Sandcastle/Sandcastle-header.js"></script>
+    <script src="jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="guiji.js"></script>
+    <script type="text/javascript" src="Build/CesiumUnminified/Cesium.js"></script>
+    <script type="text/javascript" src="datePlugin.js" ></script>
 </head>
 
 <body>
-    <div id="container"></div>
-    <div id="sound"></div>
-    <div id="alertdata1"></div>
-    <script type="text/javascript" src='//webapi.amap.com/maps?v=2.0&key=27afcc8780a14408b1508150a8534523'></script>
-    <!-- UI组件库 1.0 -->
-    <script src="//webapi.amap.com/ui/1.1/main.js?v=1.1.1"></script>
-    <script type="text/javascript">
-    //创建地图
-    var map = new AMap.Map('container', {
-        zoom:11
+
+<style>
+    @import url(Build/Cesium/Widgets/widgets.css);
+    @import url(Sandcastle/templates/bucket.css);
+</style>
+
+
+<div class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+    <div id="cesiumContainer", class="fullSize"></div>
+    <input class="cesium-button" id = "startTime" onclick="SelectDate(this,'yyyy-MM-dd hh:mm:ss')" type="button" value="start time">
+    <input class="cesium-button" id ="endTime" onclick="SelectDate(this,'yyyy-MM-dd hh:mm:ss')" type="button" value="end time">
+    <select id="selectdid" class="cesium-button">
+        <option value="88010E2005002F5A" selected="selected">88010E2005002F5A</option>
+        <option value="88010E20050044D8">88010E20050044D8</option>
+    </select>
+    <input id="refresh" type="button" value="let's go" class="cesium-button" onclick="showTrace()")>
+</div>
+
+
+<script id="cesium_sandcastle_script">
+    //1.设置container初始参数
+    var osm = new Cesium.OpenStreetMapImageryProvider({
+        url: 'https://a.tile.openstreetmap.org/'
     });
-
-    AMapUI.load(['ui/misc/PathSimplifier', 'lib/$'], function(PathSimplifier, $) {
-
-        if (!PathSimplifier.supportCanvas) {
-            alert('当前环境不支持 Canvas！');
-            return;
-        }
-
-        var pathSimplifierIns = new PathSimplifier({
-            zIndex: 100,
-            
-            map: map, //所属的地图实例
-
-            getPath: function(pathData, pathIndex) {
-
-                return pathData.path;
-            },
-            getHoverTitle: function(pathData, pathIndex, pointIndex) {
-
-                if (pointIndex >= 0) {
-                    //point 
-                    return pathData.name + '，点：' + pointIndex + '/' + pathData.path.length;
-                }
-
-                return pathData.name + '，点数量' + pathData.path.length;
-            },
-            renderOptions: {
-
-                renderAllPointsIfNumberBelow: -1 //绘制路线节点，如不需要可设置为-1
-            }
-        });
-
-        window.pathSimplifierIns = pathSimplifierIns;
-
-        //设置数据
-        pathSimplifierIns.setData([{
-            name: '路线0',
-            path: [
-                [114.359768,30.52853],
-                [114.359894,30.52853],
-               
-            ]
-            
-        }]);
-
-        //对第一条线路（即索引 0）创建一个巡航器
-        var navg1 = pathSimplifierIns.createPathNavigator(0, {
-            loop: true, //循环播放
-            speed: 5 //巡航速度，单位千米/小时
-        });
-
-      
-        navg1.start();
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+        animation: false, //不显示动画控件
+        homeButton: false, //不显示Home按钮
+        timeline: false, //不显示时间线控件
+        imageryProvider: osm
     });
-//模拟报警：进入可看最近报警提示，并看到报警前移动轨迹
-    alertdata = function(){
-        var now = new Date();
-        month = now.getMonth();
-        day = now.getDate();
-        hour = now.getHours();
-        minute = now.getMinutes();
+    viewer.camera.setView({
+        destination:Cesium.Cartesian3.fromDegrees(114.35412807424511,30.53130049933386,1500.0),
+    })
+    //2.显示轨迹
 
-       
-       
-                           
-        zhText = encodeURI("老人发出报警请及时联系");
-        document.getElementById("sound").innerHTML = "<audio autoplay=\"autoplay\">" +
-                         "<source src=\"http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&spd=7&text=" +
-                         zhText + "\" type=\"audio/mpeg\"></audio>";
-
-         alert("老人于"+month+"月"+day+"日"+hour+"时"+minute+"分"+"发出报警！请及时联系！");
-                            
-                           
+    function showTrace(){
+        //删除之前的轨迹
+        viewer.dataSources.removeAll();
+        viewer.entities.removeAll();
+        //获取参数
+        var did = selectdid.value;
+        let utcBegin = String((new Date(startTime)).getTime());
+        let utcEnd =   String((new Date(endtime)).getTime());
+        //获取数据及显示点、线
+        var data = getData(did, utcBegin, utcEnd);
+        console.log(data);
+        var pA = getPointEntities(data);
+        for (var i=0; i<pA.length; i++){
+            viewer.entities.add(pA[i]);
+        };
+        var lc = getLineCzml(data);
+        var dataSourcePromise = Cesium.CzmlDataSource.load(lc);
+        viewer.dataSources.add(dataSourcePromise);
     }
-    
-    alertdata();
-   
-    </script>
-</body>
+</script>
 
+</body>
 </html>
