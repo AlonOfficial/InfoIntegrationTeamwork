@@ -18,9 +18,8 @@
 
 
 <body>
-    <div id="tableEntry">
+    <div id="tableEntry" style = "font-size: 30px;"></div>
 
-    </div>
     <script>
     var sid = parseInt(sessionStorage.getItem("sid"));
     console.log(sid);
@@ -74,7 +73,7 @@
                     result = event.target.result;
                     //注意请求id为数据库自动生成的primaryKey
                     tableRow.id = primaryKey[j];
-                    tableRow.innerHTML = 
+                    tableRow.innerHTML = '<tr>'+
                     '<td>' + (j+1) + '</td>'
                     + '<td>' + result.name + '</td>'
                     + '<td>' + result.gender + '</td>'
@@ -82,7 +81,7 @@
                     + '<td>' + result.address + '</td>'
                     + '<td>' + leixing[j] + '</td>'
 
-                    + '<input type="submit" value="完成" onclick=deleteQingQiu('+primaryKey[j]+') >';
+                    + '<td>' + '<input style = "font-size: 30px;" type="submit" value="完成" onclick=deleteQingQiu('+primaryKey[j]+') >'+'</td></tr>';
                     //console.log(cursor.primaryKey);
                     j +=1;
                     tableEntry.appendChild(tableRow);
@@ -138,6 +137,7 @@
 
         request.onsuccess = function (event) {
             console.log('删除成功');
+            window.alert("已完成该请求");
         }
     }
 </script>

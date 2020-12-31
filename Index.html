@@ -391,14 +391,14 @@
               for(var row in data){
                 var count=0;
                 var line = [];
-                console.log(data[row]);
+                //console.log(data[row]);
                 for(var item in data[row]){
                   line[count] = data[row][item];
                   count += 1;
                 }
                 var request = db.transaction(['latlng'], 'readwrite')
                   .objectStore("latlng")
-                  .add({ id: line[0], lng: line[1], lat: line[2]});
+                  .add({ id: parseInt(line[0]), lng: parseFloat(line[1]), lat: parseFloat(line[2])});
               }
           });
       });
