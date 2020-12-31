@@ -19,12 +19,13 @@
 
 <body>
     <p id = "p1" style="font-size: 30px;"></p>
-    <h1 style="font-size: 30px; color:blueviolet">向您推荐养老院</h1>
+    <h1 id = "h1" style="font-size: 30px; color:blueviolet"></h1>
     <p id = "p2" style="font-size: 30px;"></p>
-    <h1 style="font-size: 30px;color:blueviolet">养老院的信息</h1>
+    <h1 id = "h2" style="font-size: 30px;color:blueviolet"></h1>
     <p id = "p3" style="font-size: 30px;"></p>
     <p id = "p4" style="font-size: 30px;"></p>
     <p id = "p5" style="font-size: 30px;"></p>
+    <input type="submit" value="提交申请" onclick=shenqingyanglaoyuan() >
 
 <script>
    
@@ -32,6 +33,10 @@
 var id = parseInt(sessionStorage.getItem("id"));
 //获取所有需要的数据
 var db;
+var yid = new Array;
+yid[0]=1;
+yid[1]=2;
+yid[2]=3;
 var lastbed = new Array;
 var cost = new Array;
 var pingjia = new Array;
@@ -40,6 +45,12 @@ var address = new Array;
 var phone = new Array;
 var fuzeren = new Array;
 var allin;
+var flag;
+var sname;
+var yname2;
+var laorenname;
+var shenqingflag;
+
 //获取
 getData = function(){
   //收支数据，计算老人每月净收入
@@ -49,7 +60,7 @@ getData = function(){
           };
 
           res.onsuccess = function( event) {
-            
+            laorenname = res.result.name;
             var bin = res.result.bin;
             var bout = res.result.bout;
             allin = bin - bout;
@@ -95,6 +106,7 @@ getData = function(){
               res33.onsuccess = function(event){pingjia[2] = res33.result.pingjia;}
           }
   
+  
 }
   
 
@@ -114,70 +126,79 @@ getData = function(){
  
         request.onsuccess = function (event) {
           db = event.target.result;
-          //显示老人所在位置
-          showposition();
+
           //获取数据
           getData();
+          var resq = db.transaction(['shequlaoren'], 'readonly').objectStore('shequlaoren').get(id);
+            resq.onerror = function (event) {
+                console.log('事务失败');
+            };
+
+            resq.onsuccess = function (event) {
+                //查询老人居住地（只为没有管理的老人推荐养老院）
+                //有数据即在社区居住
+                if (event.target.result) {
+                    flag=0;//在社区
+                    var sid = resq.result.sid;
+                    var ress = db.transaction(['shequ'],'readwrite').objectStore('shequ').get(sid);
+                    ress.onsuccess = function(){
+                    sname = ress.result.sname;
+                    }
+                }
+
+                else {
+                    //查询是否在养老院
+                    var res2q = db.transaction(['yanglaoyuanlaoren'], 'readonly').objectStore('yanglaoyuanlaoren').get(id);
+                    res2q.onerror = function (event) {
+                        console.log('事务失败');
+                    };
+
+                    res2q.onsuccess = function (event) {
+                        if (event.target.result) {
+                            flag=1;//在养老院
+                            var res3q = db.transaction(['yanglaoyuanlaoren'],'readwrite').objectStore('yanglaoyuanlaoren').get(id);
+                            res3q.onsuccess = function(event){
+                                var yid = res3q.result.yid;
+                                var res4q = db.transaction(['yanglaoyuan'],'readwrite').objectStore('yanglaoyuan').get(yid);
+                                res4q.onsuccess = function(){
+                                yname2 = res4q.result.yname;
+                            
+                                }
+                            }
+                        }
+
+                        else {
+                            flag=2;//两处都不在
+                        }
+                    }
+                }
+            }
         }
-          
-  
-         
-  
-
-//显示老人居住地
-   function showposition(){
         
-        var res = db.transaction(['hukou'],'readwrite').objectStore('hukou').get(id);
-          res.onerror = function(event) {
-           console.log('事务失败');
-        };
-
-        res.onsuccess = function( event) {
-           if (res.result) {
-             //显示老人所在位置
-             //社区
-            if(id == 5 || id==10 || id==11 || id==13 || id==16 || id==19 || id==20){
-              var res1 = db.transaction(['shequlaoren'],'readwrite').objectStore('shequlaoren').get(id);
-              res1.onsuccess = function(event){
-                var sid = res1.result.sid;
-                var res2 = db.transaction(['shequ'],'readwrite').objectStore('shequ').get(sid);
-                res2.onsuccess = function(){
-                  var sname = res2.result.sname;
-                  $(document).ready(function(){
-                     $("#p1").text("您当前居住位置："+sname);
-                  })
-                }
-              }
-            }
-            //养老院
-            else{
-              var res3 = db.transaction(['yanglaoyuanlaoren'],'readwrite').objectStore('yanglaoyuanlaoren').get(id);
-              res3.onsuccess = function(event){
-                var yid = res3.result.yid;
-                var res4 = db.transaction(['yanglaoyuan'],'readwrite').objectStore('yanglaoyuan').get(yid);
-                res4.onsuccess = function(){
-                  var yname = res4.result.yname;
-                  var bednum = res4.result.bednum;
-                  $(document).ready(function(){
-                     $("#p1").text("您当前居住位置："+yname+"   "+"床位："+bednum+"号");
-                  })
-                }
-              }
-
-            }
-           
-           } else {
-             console.log('未获得数据记录');
-           }
-        };
-     }
-    
+  
 
 
-  //实现根据老人收支、养老院床位、价格、评价智能推荐养老院
+  //实现根据老人收支、养老院床位、价格、评价智能推荐养老院,只为既没有社区管理也没有养老院管理的人
   //评价规则，优先综合评价为A，但如果资金负担不起或床位不足则降为B，以此类推
   tuijian = function(){
-    for(i=0;i<3;i++){
+    //判断居住地
+    if (flag==0) {
+      $(document).ready(function(){
+                     $("#p1").text("您当前居住位置："+sname);
+                     $("#h1").text("您当前已在"+sname+"管理中，暂时无法申请养老院");
+                  })
+    }else if(flag==1){
+      $(document).ready(function(){
+                     $("#p1").text("您当前居住位置："+yname2);
+                     $("#h1").text("您当前已在"+yname2+"管理中，暂时无法申请养老院");
+                  })
+    }else if(flag==2){
+      $(document).ready(function(){
+                     $("#p1").text("您当前居住位置:非社区亦非养老院");
+                     $("#h1").text("我们为您推荐养老院：");
+                     $("#h2").text("该养老院信息如下：");
+                  })
+      for(i=0;i<3;i++){
       if(pingjia[i]=="A" && lastbed[i]>0 && cost<allin ){
         $(document).ready(function(){
             $("#p2").text(yname[i]);
@@ -186,6 +207,7 @@ getData = function(){
             "负责人："+fuzeren[i]);
             $("#p4").text("剩余床位："+lastbed[i]+"张"+"     "+"价格："+cost[i]+"元/月");
             $("#p5").text("综合评价等级："+pingjia[i]);
+            shenqingflag=i;
         })
         break;
       }
@@ -197,6 +219,8 @@ getData = function(){
             "负责人："+fuzeren[i]);
             $("#p4").text("剩余床位："+lastbed[i]+"张"+"     "+"价格："+cost[i]+"元/月");
             $("#p5").text("综合评价等级："+pingjia[i]);
+            shenqingflag=i;
+            
         })
         break;
       }
@@ -208,15 +232,27 @@ getData = function(){
             "负责人："+fuzeren[i]);
             $("#p4").text("剩余床位："+lastbed[i]+"张"+"     "+"价格："+cost[i]+"元/月");
             $("#p5").text("综合评价等级："+pingjia[i]);
+            shenqingflag=i;
         })
         break
       }
 
       }
     }
+  }
   
-    
+  shenqingyanglaoyuan = function(){
+    if(flag ==2){
+      var ressq = db.transaction(['shenqingyly'], 'readwrite').objectStore('shenqingyly')
+              .add({ yid: yid[shenqingflag], id: id, isok:0});
+      ressq.onsuccess = function(event){
+        alert("申请成功，养老院负责人将尽快为您办理");
 
+      }
+    }else{
+      alert("您无法申请养老院!");
+    }
+  }
   
   
   setTimeout(() => {

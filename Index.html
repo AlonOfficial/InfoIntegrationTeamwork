@@ -117,6 +117,7 @@
       addbingli();
       //创建空请求列表
       //addqingqiu();
+      
     }
     request.onupgradeneeded = function (event) {
       db = event.target.result;
@@ -157,6 +158,11 @@
       };
       if (!db.objectStoreNames.contains("yanglaoyuanqingqiu")) {
         objectStore = db.createObjectStore("yanglaoyuanqingqiu", { autoIncrement: true });
+        objectStore.createIndex('yid', 'yid', { unique: false });
+        objectStore.createIndex('id', 'id', { unique: false });
+      };
+      if (!db.objectStoreNames.contains("shenqingyly")) {
+        objectStore = db.createObjectStore("shenqingyly", { autoIncrement: true });
         objectStore.createIndex('yid', 'yid', { unique: false });
         objectStore.createIndex('id', 'id', { unique: false });
       };
