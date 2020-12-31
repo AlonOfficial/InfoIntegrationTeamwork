@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>养老院信息</title>
+    <script src="../../js/jquery-3.5.1.min.js"></script>
+</head>
+<style>
+
+
+</style>
+<body>
+<h2 class="title">机构基本信息表</h2>
+<div class="InfoNursingHome">
+    <table class="info-table">
+    <tr class="line-Info">
+        <th class="filedName"> 名称</th><td class="details-info" id="nursing-name"></td>
+        <th class="filedName">面积</th><td class="details-ifo" id = "nursing-area"></td>
+    </tr>
+    <tr class="line-Info">
+        <th class="filedName">负责人</th><td class="details-ifo" id ="nursing-principal"></td>
+        <th class="filedName">联系方式</th><td class="details-ifo" id="nursing-phone"></td>
+    </tr>
+
+    <tr class="line-Info">
+        <th class="filedName">床位数</th><td class="details-ifo" id ='nursing-bedNum'></td>
+        <th class="filedName">老人数</th><td class="details-ifo" id ='nursing-olderNum'></td>
+    </tr>
+
+    <tr class="line-Info">
+     <th class="filedName">地址</th><td class="details-ifo" id ="nursing-address"></td>
+   </tr>
+
+
+    </table>
+</div>
+
+<script>
+
+
+    //获取养老院信息id
+    var NursingId= 1;
+    searchInfo_odler_request();
+    //向服务器发送请求
+   function searchInfo_odler_request() {
+        var indexedDB = window.indexedDB;
+        var db;
+        if (!indexedDB) {
+            window.alert("你的浏览器不支持IndexedDB");
+        }
+        //打开数据库
+        var request = window.indexedDB.open("yanglao", 1);
+        request.onerror = function (event) {
+            console.log('数据库打开报错');
+        };
+        request.onupgradeneeded = function (e) {
+            db = event.target.result;
+            console.log("版本变化");
+
+        }
+        request.onsuccess = function (event) {
+            db = event.target.result;
+            var res1 = db.transaction(['yanglaoyuan'], 'readwrite').objectStore('yanglaoyuan').get(NursingId);
+            res1.onerror = function (event) {
+                console.log('事务失败');
+            };
+
+            res1.onsuccess = function (event) {
+                var name = res1.result;
+                $("#nursing-name").append(name.yname) ;
+                $("#nursing-area").append(name.area) ;
+                $("#nursing-principal").append(name.fuzeren) ;
+                $("#nursing-phone").append(name.phone) ;
+                $("#nursing-bedNum").append(name.bednum) ;
+                $("#nursing-olderNum").append(name.personnum) ;
+                $("#nursing-address").append(name.address) ;
+
+                console.log(name);
+            };
+        }
+    }
+
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
