@@ -18,19 +18,21 @@
 
 <body>
 
+  <style>
+
+
+  </style>
 
 
   <h1>告诉我们您的需要</h1>
-  
   <input type="button" id="lifa" style="font-size: 50px;" value="理发" onclick="qingqiu()"></input>
-  <input type="button" id="songcan" style="font-size: 50px;" value="送饭" onclick="qingqiu()"></input>
+  <input type="button" id="songcan" style="font-size: 50px;" value="送餐" onclick="qingqiu()"></input>
   <input type="button" id="jiuyi" style="font-size: 50px;" value="陪同就医" onclick="qingqiu()"></input>
   <input type="button" id="huli" style="font-size: 50px;" value="护理" onclick="qingqiu()"></input>
   <input type="button" id="jiazheng" style="font-size: 50px;" value="家政" onclick="qingqiu()"></input>
   <input type="button" id="zuoche" style="font-size: 50px;" value="坐车" onclick="qingqiu()"></input>
   <input type="button" id="weixiu" style="font-size: 50px;" value="维修" onclick="qingqiu()"></input>
   
-
 
 
   <script>
@@ -64,6 +66,7 @@
 
     request.onsuccess = function (event) {
       db = event.target.result;
+
     }
 
 
@@ -79,7 +82,7 @@
       //判断老人在社区还是养老院
       var name = "";
 
-      var res1 = db.transaction(['hukou'], 'readwrite').objectStore('hukou').get(id);
+      var res1 = db.transaction(['hukou'], 'readonly').objectStore('hukou').get(id);
       res1.onerror = function (event) {
         console.log('事务失败');
       };
@@ -87,74 +90,62 @@
       res1.onsuccess = function (event) {
         console.log("拿到老人数据");
         name = res1.result.name;
-
-        if (res1.result) {
-          console.log("拿到老人数据2");
-          if (id == 5 || id == 10 || id == 11 || id == 13 || id == 16 || id == 19 || id == 20) {
-
-            //社区
-            var mid;
-
-            //获取老人对应社区的sid
-            var res2 = db.transaction(['shequlaoren'], 'readwrite').objectStore('shequlaoren')
+        //判断老人在社区还是养老院
+        var res2 = db.transaction(['shequlaoren'], 'readonly').objectStore('shequlaoren')
               .get(id);
             res2.onerror = function (event) {
               console.log('读入失败');
             };
             res2.onsuccess = function (event) {
-              var sid = res2.result.sid;
-              //写入请求列表
-              var res3 = db.transaction(['shequqingqiu'], 'readwrite').objectStore('shequqingqiu').add({ sid: sid, id: id, name: name, leixing: mname, isok: 0 });
+              if(event.target.result){
+                //社区
+                console.log("进入社区循环");
+                //获取老人对应社区的sid
+                var sid = res2.result.sid;
+                var res3 = db.transaction(['shequqingqiu'], 'readwrite').objectStore('shequqingqiu').add({ sid: sid, id: id, name: name, leixing: mname, isok: 0 });
+                res3.onerror = function (event) {
+                  console.log('写入失败');
+                };
+                res3.onsuccess = function (event) {
+                  console.log('写入成功');
+                }
+                alert("您当前居住于社区中，我们已联系社区志愿者尽快帮您" + mname);
 
-              res3.onerror = function (event) {
-                console.log('写入失败');
-              };
-              res3.onsuccess = function (event) {
-                console.log('写入成功');
+              }else{
+                var res4 = db.transaction(['yanglaoyuanlaoren'], 'readonly').objectStore('yanglaoyuanlaoren')
+                      .get(id);
+                     res4.onerror = function (event) {
+                      console.log('读入失败');
+                     };
+                     res4.onsuccess = function (event) {
+                       if(event.target.result){
+                           //养老院 
+                          console.log("进入养老院循环");
+                          var yid = res4.result.yid;
+                          var res5 = db.transaction(['yanglaoyuanqingqiu'], 'readwrite').objectStore('yanglaoyuanqingqiu').add({ yid: yid, id: id, name: name, leixing: mname, isok: 0 });
+                          res5.onerror = function (event) {
+                            console.log('写入失败');
+                          };
+                          res5.onsuccess = function (event) {
+                            console.log('写入成功');
+
+                          };
+                          alert("您当前居住于社区中，我们已联系养老院尽快帮您" + mname);
 
 
-              };
-            };
-            alert("您当前居住于社区中，我们已联系社区志愿者尽快为您" + mname);
+                       }else{
+                         //都不在
+                         alert("抱歉您无法使用服务，建议您加入社区或养老院！");
+                       }
 
+                   
+                     }
+
+              }
+            }
           }
 
-          else {
-            //养老院 
-            console.log("进入养老院循环");
-            var mid;
-
-            //获取老人对应养老院的yid
-            var res2 = db.transaction(['yanglaoyuanlaoren'], 'readwrite').objectStore('yanglaoyuanlaoren')
-              .get(id);
-            res2.onerror = function (event) {
-              console.log('读入失败');
-            };
-            res2.onsuccess = function (event) {
-              console.log("2");
-              var yid = res2.result.yid;
-              //写入请求列表
-              var res3 = db.transaction(['yanglaoyuanqingqiu'], 'readwrite').objectStore('yanglaoyuanqingqiu').add({ yid: yid, id: id, name: name, leixing: mname, isok: 0 });
-
-              res3.onerror = function (event) {
-                console.log('写入失败');
-              };
-              res3.onsuccess = function (event) {
-                console.log('写入成功');
-
-              };
-            };
-            alert("您当前居住于养老院中，我们已联系养老院尽快为您" + mname);
-
-          }
-
-        } else {
-          console.log('未获得数据记录');
-        }
-      };
-
-
-
+         
       console.log('数据库打开成功');
     }
 
