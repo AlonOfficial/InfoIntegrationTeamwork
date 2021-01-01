@@ -97,6 +97,7 @@
       addyanglaoyuan();
       addminzhengyanglaoyuan();
       addyanglaoyuanlaoren();
+      addyanglaoyuanbed();
       //银行数据导入
       addbank();
       //老人坐标数据导入
@@ -325,7 +326,7 @@
     }
 
     //养老院-床位
-    function addbank(){
+    function addyanglaoyuanbed(){
       $(document).ready(function() {
         //使用$.get()方法导入和解析CSV文件
         $.get("source/yangbed.csv", function(theData) {
@@ -335,10 +336,6 @@
             var count=0;
             var line = [];
             for(var item in data[row]){
-              if(count==0){
-                count += 1;
-                continue;
-              }
               line[count] = data[row][item];
               count += 1;
             }
@@ -374,8 +371,7 @@
                   .objectStore("bank")
                   .add({ id: parseInt(line[1]), ball: line[2], bin: line[3], bout: line[4]});
               }
-              //var theHtml = createTable(data);
-              //$('#theResult').html(theHtml);
+
           });
       });
     }
@@ -419,7 +415,7 @@
                 }
                 var request = db.transaction(['latlng'], 'readwrite')
                   .objectStore("latlng")
-                  .add({ id: parseInt(line[0]), lng: parseFloat(line[1]), lat: parseFloat(line[2])});
+                  .add({ id:be, lng: parseFloat(line[1]), lat: parseFloat(line[2])});
               }
           });
       });
