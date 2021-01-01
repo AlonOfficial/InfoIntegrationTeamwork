@@ -122,23 +122,7 @@
       db = event.target.result;
       console.log('数据库打开成功');
       //公安户口数据导入
-      addhukou();
-      //社区数据导入
-      addshequ();
-      addshequlaoren();
-      //养老院数据导入
-      addyanglaoyuan();
-      addminzhengyanglaoyuan();
-      addyanglaoyuanlaoren();
-      addyanglaoyuanbed();
-      //银行数据导入
-      addbank();
-      //老人坐标数据导入
-      addlatlng();
-      //病历数据导入
-      addbingli();
-      //创建空请求列表
-      //addqingqiu();
+
       
     }
     request.onupgradeneeded = function (event) {
@@ -193,6 +177,23 @@
         objectStore.createIndex('yid', 'yid', { unique: false });
         objectStore.createIndex('id', 'id', { unique: false });
       };
+      addhukou();
+      //社区数据导入
+      addshequ();
+      addshequlaoren();
+      //养老院数据导入
+      addyanglaoyuan();
+      addminzhengyanglaoyuan();
+      addyanglaoyuanlaoren();
+      addyanglaoyuanbed();
+      //银行数据导入
+      addbank();
+      //老人坐标数据导入
+      addlatlng();
+      //病历数据导入
+      addbingli();
+      //创建空请求列表
+      //addqingqiu();
       //add();
     }
     //公安-户口
@@ -447,7 +448,7 @@
                 }
                 var request = db.transaction(['latlng'], 'readwrite')
                   .objectStore("latlng")
-                  .add({ id:be, lng: parseFloat(line[1]), lat: parseFloat(line[2])});
+                  .add({ id:parseInt(line[0]), lng: parseFloat(line[1]), lat: parseFloat(line[2])});
               }
           });
       });
