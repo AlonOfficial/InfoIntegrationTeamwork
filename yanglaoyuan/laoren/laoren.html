@@ -23,8 +23,7 @@
 <script>
 
 
-    //获取登录老人id，这个需要实现登录功能将id传过来
-        var id = 3;
+    var NursingId = parseInt(sessionStorage.getItem("yid"));
         var indexedDB = window.indexedDB;
         var db;
         if (!indexedDB) {

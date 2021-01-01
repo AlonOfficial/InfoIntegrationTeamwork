@@ -379,7 +379,6 @@
     //csv格式生成html表格
     function createTable(data) {
         var html = '';
-        
         if(data[0].constructor === Object) {
             html += '<tr>\r\n';
             for(var item in data[0]) {

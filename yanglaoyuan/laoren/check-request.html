@@ -7,7 +7,8 @@
     <script src = '../../js/jquery-3.5.1.min.js'></script>
     <style>
         .d{
-            color: red;
+            /*color: red;*/
+            display: none;
         }
     </style>
 </head>
@@ -16,9 +17,11 @@
 <div class="show-request" id="request-result">
     <table id="older-request" class="request-table"></table>
 </div>
+
 <script>
-    //获取登录老人id，这个需要实现登录功能将id传过来
-    var NursingId = 1;
+    var NursingId = parseInt(sessionStorage.getItem("yid"));
+
+
     var olderNursinglist = new Array();
     //向服务器发送请求
     var indexedDB = window.indexedDB;
@@ -42,8 +45,26 @@
         db = event.target.result;
     }
 
+
+    //读取老人数据以表格形式表现
+    function readandshow(id) {
+        var arr=new Array();
+        var res = db.transaction(['hukou'], 'readwrite').objectStore('hukou').get(id);
+        res.onerror = function (event) {
+            console.log('事务失败');
+        };
+        res.onsuccess = function (event) {
+            if (res.result) {
+                arr.push(res.result.name);
+                arr.push(res.result.gender);
+                arr.push(res.result.birthday);
+            }
+        }
+        return arr;
+    }
+
     function showData() {
-        var store = db.transaction(['yanglaoyuanlaoren'], 'readonly').objectStore('yanglaoyuanlaoren');
+        var store = db.transaction(['shenqingyly'], 'readonly').objectStore('shenqingyly');
         var c = store.openCursor();//打开游标
         c.onsuccess = function (e) {//成功执行回调
             var cursor = e.target.result;
@@ -52,17 +73,30 @@
                 if (older.yid == NursingId) {
                     olderNursinglist.push(older);
                     var id = older.id;
-                    var name = older.name;
-                    var gender = older.gender;
-                    var birthday = older.birthday;
-                    var bedid = older.bedid;
+                    // var res = db.transaction(['hukou'], 'readwrite').objectStore('hukou').get(id);
+                    // res.onerror = function (event) {
+                    //     console.log('事务失败');
+                    // };
+                    // res.onsuccess = function (event) {
+                    //     if (res.result) {
+                    //         arr.push(res.result.name);
+                    //         arr.push(res.result.gender);
+                    //         arr.push(res.result.birthday);
+                    //     }
+                    // }
+
+                    // var name = arr[1];
+                    // alert(name)
+                    // var gender = older.gender;
+                    // var birthday = older.birthday;
+                    // var bedid = older.bedid;
                     var html = "";
                     html += '<tr>';
                     html += '<th> Id</th>' + '<td>' + id + '</td>';
-                    html += '<th> Name</th>' + '<td>' + name + '</td>';
-                    html += '<th> gender</th>' + '<td>' + gender + '</td>';
-                    html += '<th> birthday</th>' + '<td>' + birthday + '</td>';
-                    html += '<th> bedid</th>' + '<td>' + bedid + '</td>';
+                    // html += '<th> Name</th>' + '<td>' + name + '</td>';
+                    // html += '<th> gender</th>' + '<td>' + gender + '</td>';
+                    // html += '<th> birthday</th>' + '<td>' + birthday + '</td>';
+                    // html += '<th> bedid</th>' + '<td>' + bedid + '</td>';
                     html += '<td><input type="button" id="delete" value="删除"> </input></td>'
                     html += '<td><input type="button" id="confirm" value="确认"> </input></td>'
                     html += '</tr>';
@@ -84,23 +118,26 @@
 <script>
 
     $(document).on('click', '#delete', function () {
-        $(this).addClass('d');
-        // alert("已删除");
-
-        // var trs = $(this).parent().find('td'); //获取所有tr
-        // if(trs.hasClass('d')){ //判断这些tr 有没有Class ‘on’’
-        //     trs.removeClass('d');//把class on 移除
-        // }
-        // $(this).addClass('d');//点击的tr 添加 on class 用于改变样式
-        // // Wenshiduinfo= $(this).text()
-        //
-        // var text =[];
-        //
-        $(this).parent().parent().children('td').each(function(j){  // 遍历 tr 的各个 td
-            // text.push($(this).html());
-            alert($(this).html());
-        });
+        var id =$(this).parent().siblings().eq(1).text();
+        var request = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly').openCursor()
+        request.onerror = function (event) {
+            console.log('事务失败');
+        };
+        request.onsuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                var older = cursor.value;
+                alert(older.id==id)
+                if (older.id == id) {
+                    cursor.delete();
+                    console.log('删除成功');
+                }
+            }
+            cursor.continue();
+        }
+        $(this).parent().parent().remove();
     });
+
     $(document).on('click', '#confirm', function () {
         $(this).addClass('d');
         var text =[];

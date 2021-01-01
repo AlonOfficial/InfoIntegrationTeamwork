@@ -40,8 +40,7 @@
 </div>
 <script>
 
-
-    var yid = parseInt(sessionStorage.getItem("sid"));
+     var yid = parseInt(sessionStorage.getItem("yid"));
     $("#check-in").click(function()
     {
         var obj = $("#register");
@@ -52,6 +51,7 @@
         }
     })
     $("#register-commit").click(function () {
+
         var id = $("#vid").val();
         var name = $("#vname").val();
         var yid = yid;
