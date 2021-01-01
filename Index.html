@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%">
 
 <head>
   <!-- Use correct character set. -->
@@ -16,61 +16,94 @@
   <script src="https://cdn.bootcss.com/jquery-csv/1.0.4/jquery.csv.min.js"></script>
 
   <style>
-    body,
-    html {
-      margin: 0;
-      padding: 0;
-    }
-
-    a:hover {
-      color: #ff0000;
-    }
-
-    .mapEarth {
-      position: absolute;
-      width: 80%;
+    body {
       height: 100%;
-      display: inline-block;
-      float: right;
-      display: inline-block;
+      overflow-x: hidden;
+      z-index: 2;
     }
 
-    .menu {
-      float: left;
-      width: 20%;
-      height: 100%;
-    }
-
-    .menu div {
-      list-style: none;
-      height: 40px;
-      background-color: #F7F7F7;
+    #header {
+      background-color: rgb(136, 214, 220);
+      height: 10%;
+      color: white;
       text-align: center;
-      border: 0.2px solid #DFDFDF;
-
+      padding: 5px;
     }
 
-    .fontWeight {
-      font-weight: 800;
-      color: black;
+    #section {
+      width: 100%;
+      height: 80%;
+      float: left;
+      background-image: url(background.jpg);
+      background-repeat: no-repeat;
+      background-size: cover;
     }
 
-    a {
-      font-size: 14px;
-      font-family: Arial, "宋体";
-      line-height: 40px;
-      text-decoration: none;
-      color: #0a001f;
+    .float1 {
+      background-color: rgba(136, 214, 220, 0.8);
+      color: white;
+      position: absolute;
+      top: 60%;
+      left: 15%;
+      width: 15%;
+      height: 20%;
+      text-align: center;
+      margin-top: 0px;
+      z-index: 99 !important;
+      
+    }
+
+    a{
+      font-size: 40px;
+      color: white;
+      text-decoration:none;
+    }
+
+
+    #footer {
+      height: 5%;
+      background-color: rgb(136, 214, 220);
+      color: white;
+      clear: both;
+      text-align: center;
+      padding: 5px;
     }
   </style>
 </head>
 
 <body>
 
-  <a href="minzheng/helloworld.html">民政局入口</a><br />
-  <a href="laorenzinv/login.html">老人子女入口</a><br />
-  <a href="shequ/login.html">社区入口</a><br />
-  <a href="yanglaoyuan/login.html">养老院入口</a><br />
+  <div id="header">
+    <h1>养老综合服务平台</h1>
+  </div>
+
+  <div id="section"></div>
+
+
+
+  <div class="float1" style="left:8%;">
+    <a href="minzheng/helloworld.html">民政局<br />入口</a><br />
+  </div>
+  <div class="float1" style="left:31%;">
+    <a href="laorenzinv/login.html">老人子女<br />入口</a><br />
+  </div>
+  <div class="float1" style="left:54%;">
+    <a href="shequ/login.html">社区<br />入口</a><br />
+  </div>
+  <div class="float1" style="left:76%;">
+    <a href="yanglaoyuan/login.html">养老院<br />入口</a><br />
+  </div>
+
+  </div>
+
+  <div id="footer">
+    Copyright ： 武汉大学遥感学院空信专业第六小组
+  </div>
+
+  
+  
+  
+  
 
   <script>
 
