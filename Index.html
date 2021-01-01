@@ -122,27 +122,6 @@
       db = event.target.result;
       console.log('数据库打开成功');
       //公安户口数据导入
-<<<<<<< HEAD
-      addhukou();
-      //社区数据导入
-      addshequ();
-      addshequlaoren();
-      //养老院数据导入
-      addyanglaoyuan();
-      addminzhengyanglaoyuan();
-      addyanglaoyuanlaoren();
-      addyanglaoyuanbed();
-      //银行数据导入
-      addbank();
-      //老人坐标数据导入
-      addlatlng();
-      //病历数据导入
-      addbingli();
-      //创建空请求列表
-      //addqingqiu();
-=======
-
->>>>>>> 8c1d710bc8eed429aaad68fc1af5a7476d930840
       
     }
     request.onupgradeneeded = function (event) {
@@ -468,11 +447,7 @@
                 }
                 var request = db.transaction(['latlng'], 'readwrite')
                   .objectStore("latlng")
-<<<<<<< HEAD
-                  .add({ id:be, lng: parseFloat(line[1]), lat: parseFloat(line[2])});
-=======
                   .add({ id:parseInt(line[0]), lng: parseFloat(line[1]), lat: parseFloat(line[2])});
->>>>>>> 8c1d710bc8eed429aaad68fc1af5a7476d930840
               }
           });
       });
@@ -512,7 +487,7 @@
     function addyanglaoyuanqingqiu(){
       var request = db.transaction(['yanglaoyuanqingqiu'], 'readwrite')
               .objectStore('yanglaoyuanqingqiu')
-              .add({ yid, id,name,leixing,isok});
+              .add({ yid, id,name,leixing,date,isok});
     }
     function addshenqingyly(){
       var request = db.transaction(['shenqingyly'], 'readwrite')

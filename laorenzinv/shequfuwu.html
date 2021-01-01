@@ -108,7 +108,15 @@
 
   <script>
     var mname;
-    
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth()+1;
+    var day = now.getDay();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+    var date = year+"年"+month+"月"+day+"日"+hour+"时"+minute+"分"+second+"秒";
+
     var id = parseInt(sessionStorage.getItem("id"));
     
     //$("input").click(function (e) {
@@ -173,7 +181,7 @@
                 console.log("进入社区循环");
                 //获取老人对应社区的sid
                 var sid = res2.result.sid;
-                var res3 = db.transaction(['shequqingqiu'], 'readwrite').objectStore('shequqingqiu').add({ sid: sid, id: id, name: name, leixing: mname, isok: 0 });
+                var res3 = db.transaction(['shequqingqiu'], 'readwrite').objectStore('shequqingqiu').add({ sid: sid, id: id, name: name, leixing: mname,date:date, isok: 0 });
                 res3.onerror = function (event) {
                   console.log('写入失败');
                 };
@@ -193,7 +201,7 @@
                            //养老院 
                           console.log("进入养老院循环");
                           var yid = res4.result.yid;
-                          var res5 = db.transaction(['yanglaoyuanqingqiu'], 'readwrite').objectStore('yanglaoyuanqingqiu').add({ yid: yid, id: id, name: name, leixing: mname, isok: 0 });
+                          var res5 = db.transaction(['yanglaoyuanqingqiu'], 'readwrite').objectStore('yanglaoyuanqingqiu').add({ yid: yid, id: id, name: name, leixing: mname, date:date,isok: 0 });
                           res5.onerror = function (event) {
                             console.log('写入失败');
                           };
