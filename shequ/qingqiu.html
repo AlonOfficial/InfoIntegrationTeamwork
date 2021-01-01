@@ -37,6 +37,7 @@
             <th>年龄</th>
             <th>住址</th>
             <th>类型</th>
+            <th>时间</th>
             <th>操作</th>
         </tr>
     </table>
@@ -72,6 +73,7 @@
         var j = 0;
         var leixing = new Array();
         var primaryKey = new Array();
+        var shijian = new Array();
         request.onerror = function (event) {
             console.log('事务失败');
         };
@@ -82,6 +84,7 @@
             if (cursor) {
                 leixing[i] = cursor.value.leixing;
                 primaryKey[i] = cursor.primaryKey;
+                shijian[i] = cursor.value.date;
                 var tableRow = document.createElement('tr');
                 
                 var request1 = db.transaction('hukou', "readonly").objectStore('hukou').get(cursor.value.id);
@@ -101,6 +104,7 @@
                     + '<td>' + GetAge(result.birthday) + '</td>'
                     + '<td>' + result.address + '</td>'
                     + '<td>' + leixing[j] + '</td>'
+                    + '<td>' + shijian[j] + '</td>'
                     + '<td style = "color:red" onclick = deleteQingQiu('+primaryKey[j]+')>' + '完成' + '</td>';
 
                     j +=1;
