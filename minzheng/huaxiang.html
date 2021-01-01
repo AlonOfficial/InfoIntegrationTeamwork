@@ -12,12 +12,326 @@
     />
     <title>民政局入口</title>
     <script src="../js/jquery-3.5.1.min.js"></script>
-
+    <script src="../js/echarts.common.js"></script>
     
 </head>
 
 
 <body>
-
+    <div style="width: 900px; height: 50px; border: 1px solid;">这里是搜索模块</div>
+    <div style="height: 300px;">
+        <div style="width: 600px; height: 300px; border: 1px solid; float: left;">这里是老人信息</div>
+        <div id="divscore" style="width: 300px; height: 300px; border: 1px solid; float: left;">这里是综合分数</div>
+    </div>
+    <div style="width: 900px; height: 100px; border: 1px solid;">健康值</div>
+    <div style="width: 900px; height: 100px; border: 1px solid;">温暖值</div>
+    <div style="width: 900px; height: 100px; border: 1px solid;">温饱值</div>
 </body>
+
+<script>
+    //open db
+    var request = window.indexedDB.open("yanglao", 1);
+    request.onerror =  function(event){
+        console.log('open db eror');
+    };
+    //open db success
+    request.onsuccess = function(event){
+        db = event.target.result;
+    //main
+        //计算各项分值（应该是在读取数据之后的）
+        var jkScore=0, wnScore=0, wbScore=0;
+        var jkBingS=0, jkAgeS=0, wnMarriageS, wnChildS, wbHouseS, wbBankS, wbSpotS;
+        var score;
+        //检索老人
+        var id=7;
+
+        countAll(id);
+        setTimeout(() => 
+        {
+            count();
+        }, 500);
+    }
+
+    //设定评分标准
+    var weight = {
+        'wb':0.4,
+        'wbHouse':0.15,
+        'wbBank':0.15,
+        'wbSpot':0.1,
+        'jk':0.3,
+        'jkBing':0.2,
+        'jkAge':0.1,
+        'wn':0.3,
+        'wnMarriage':0.15,
+        'wnChild':0.15
+    };
+    var wbHouse = {
+        'A':100,
+        'shequ':90,
+        'B':80,
+        'house':70,
+        'C':60,
+    };
+    var wbBank = {
+        'ten':100,
+        'five':80,
+        'one':60,
+        'dot1':40
+    };
+    var wbSpot={
+        'onekm':100,
+        'fivekm':80,
+        'tenkm':60,
+    };
+    var jkBing={
+        '无疾病':100,
+        '糖尿病':90,
+        '老年痴呆':70,
+        '高血压':60,
+        '冠心病':50,
+        '脑梗':40
+    };
+    var jkAge={
+        'vy':100,
+        'y':90,
+        'my':80,
+        'o':70,
+        'vo':60
+    };
+    var wnMarriage={
+        'Med':100,
+        'unMed':60,
+    };
+    var wnChild={
+        'twoC':100,
+        'oneC':80,
+        'zeroC':60
+    };
+
+
+
+    //获取数据计算分数
+    function countAll(id){
+        //count wbBanks
+        var res1 = db.transaction(['bank'], 'readwrite').objectStore('bank').get(id);
+        res1.onerror = function (event) {
+            console.log('bank error');
+        };
+        res1.onsuccess = function (event) {
+            if (res1.result) {
+                var all = parseFloat(res1.result.ball);
+                var a;
+                if(all <= 10000){
+                    a = 'dot1';
+                }
+                else if(all <=50000){
+                    a = 'one';
+                }
+                else if(all <= 100000){
+                    a = 'five';
+                }
+                else{
+                    a = 'ten';
+                }
+                wbBankS = wbBank[a];
+            };
+        }
+        //count wbSpots  注意latlng表的id是字符串
+        var res2 = db.transaction(['latlng'], 'readwrite').objectStore('latlng').get(id);
+        res2.onerror = function(event){
+            console.log('latlng error');
+        }
+        res2.onsuccess = function(event){
+            var distance = dist(res2.result.lng, res2.result.lat, 114.3162001, 30.58108413);
+            var b;
+            if(distance<1000){
+                b = 'onekm';
+            }
+            else if(distance<5000){
+                b = 'fivekm';
+            }
+            else if(distance<10000){
+                b = 'tenkm';
+            }
+            wbSpotS = wbSpot[b];
+        }
+        //count jkBings (带中文的字符串不能参与计算和判断)
+        var res3 = db.transaction(['bingli'], 'readwrite').objectStore('bingli').get(id);
+        res3.onerror = function(event){
+            console.log('bingli error');
+        }
+        res3.onsuccess = function(event){
+            console.log(res3.result.ill)
+            var d = res3.result.ill;
+            if (d.indexOf('糖')>-1){
+                jkBingS = jkBing.糖尿病;
+            }
+            else if(d.indexOf('无')>-1){
+                jkBingS = jkBing.无疾病;
+            }
+            else if(d.indexOf('高')>-1){
+                jkBingS = jkBing.高血压;
+            }
+            else if(d.indexOf('脑')>-1){
+                jkBingS = jkBing.脑梗;
+            }
+            else if(d.indexOf('冠')>-1){
+                jkBingS = jkBing.冠心病;
+            }
+            else{
+                jkBingS = jkBing.老年痴呆;
+            }
+        }
+        //count jkAgeS and wnMarriageS
+        var res4 = db.transaction(['hukou'], 'readwrite').objectStore('hukou').get(id);
+        res4.onerror = function(event){
+            console.log('hukou error');
+        }
+        res4.onsuccess = function(event){
+            var age = GetAge(res4.result.birthday);
+            console.log(age);
+            var c;
+            if(res4.result.marriage == '已婚'){
+                wnMarriageS = wnMarriage['Med'];
+            }
+            else{
+                wnMarriageS = wnMarriage['unMed'];
+            }
+            if(age<=60){
+                c = 'vy';
+            }
+            else if(age<=65){
+                c = 'y';
+            }
+            else if(age<=70){
+                c = 'my';
+            }
+            else if(age<=75){
+                c = 'o';
+            }
+            else{
+                c = 'vo';
+            }
+            console.log(c);
+            jkAgeS = jkAge[c];
+        }
+        //count wnChilds and wbHouses
+        var res5 = db.transaction(['shequlaoren'], 'readwrite').objectStore('shequlaoren').get(id);
+        res5.onerror = function(event){
+            wnChildS = wnChild['zeroC'];
+        }
+        res5.onsuccess = function(event){
+            if(res5.result){
+                wbHouseS = wbHouse.shequ;
+                var cnum = parseInt(res5.result.children);
+                if(cnum>=2){
+                    wnChildS = wnChild.twoC;
+                }
+                else if(cnum == 1){
+                    wnChildS = wnChild.oneC;
+                }
+                else{
+                    wnChildS = wnChild.zeroC;
+                }
+            }
+            else{
+                wnChildS = wnChild['zeroC']
+                console.log(wnChildS);
+                var res6 = db.transaction(['yanglaoyuanlaoren'], 'readwrite').objectStore('yanglaoyuanlaoren').get(id);
+                res6.onerror = function(event){
+                    console.log('res6 error')
+                }
+                res6.onsuccess = function(event){
+                    if(res6.result){
+                        var yid = res6.result.yid;
+                        var res7 = db.transaction(['minzhengyanglaoyuan'], 'readonly').objectStore('minzhengyanglaoyuan').get(yid);
+                        res7.onsuccess = function(event){
+                            wbHouseS = wbHouse[res7.result.pingjia];
+                        }
+                    }
+                    else{
+                        wbHouseS = wbHouse.house;
+                    }
+                }
+            }
+        }
+        
+    }
+
+    function count(){
+        console.log('res6 error')
+        jkScore = jkBingS*weight.jkBing + jkAgeS*weight.jkAge;
+        wnScore = wnMarriageS*weight.wnMarriage + wnChildS*weight.wnChild;
+        wbScore = wbHouseS*weight.wbHouse + wbBankS*weight.wbBank + wbSpotS*weight.wbSpot;
+        score = jkScore+ wnScore+ wbScore;
+        console.log(jkScore);
+        console.log(wnScore);
+        console.log(wbScore);
+        console.log(score);
+        document.getElementById('divscore').innerHTML = score;
+    };
+
+    //计算经纬度距离函数
+    var dist = function (lng1, lat1, lng2, lat2){
+        var R = 6378137;
+        var dLat = (lat1 - lat2) * Math.PI / 180;
+        var dLng = (lng1 - lng2) * Math.PI / 180;
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat2 * Math.PI / 180) * Math.cos(lat1 * Math.PI / 180) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var d = R * c;
+        return Math.round(d)
+    };
+    //计算年龄函数
+    function GetAge(strBirthday){
+        var returnAge;  
+        var strBirthdayArr=strBirthday.split("-");  
+        var birthYear = strBirthdayArr[0];  
+        var birthMonth = strBirthdayArr[1];  
+        var birthDay = strBirthdayArr[2];  
+        
+        d = new Date();  
+        var nowYear = d.getFullYear();  
+        var nowMonth = d.getMonth() + 1;  
+        var nowDay = d.getDate();  
+        
+        if(nowYear == birthYear){  
+            returnAge = 0;//同年 则为0岁  
+        }  
+        else{  
+            var ageDiff = nowYear - birthYear ; //年之差  
+            if(ageDiff > 0){  
+                if(nowMonth == birthMonth) {  
+                    var dayDiff = nowDay - birthDay;//日之差  
+                    if(dayDiff < 0)  
+                    {  
+                        returnAge = ageDiff - 1;  
+                    }  
+                    else  
+                    {  
+                        returnAge = ageDiff ;  
+                    }  
+                }  
+                else  
+                {  
+                    var monthDiff = nowMonth - birthMonth;//月之差  
+                    if(monthDiff < 0)  
+                    {  
+                        returnAge = ageDiff - 1;  
+                    }  
+                    else  
+                    {  
+                        returnAge = ageDiff ;  
+                    }  
+                }  
+            }  
+            else  
+            {  
+                returnAge = -1;//返回-1 表示出生日期输入错误 晚于今天  
+            }  
+        }  
+        return returnAge;//返回周岁年龄  
+    }
+
+</script>
+
 </html>
