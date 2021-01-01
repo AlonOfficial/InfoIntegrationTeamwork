@@ -20,12 +20,27 @@
 
 
 <body>
+    <style>
+        .headtext{width:25%; height:50px; float: left;}
+    </style>
     <!-- <div style="width: 100%; height: 50px; text-align: center;">shourutu</div>
     <div class="counter col_fourth">
         <p class="count-text ">全市65岁以上老人数</p>
     </div> -->
-        <!-- <div id="num" style="width: 50%; height: 50px; color:grey; float:left">全市65岁以上老人数</div>
-    <div id="rate" style="width: 50%; height: 50px; color:grey; float: left;">全市老龄化比例</div> -->
+    <!-- 老人在哪家养老机构图分布图：社区，养老院，均未在（他们有判断函数）
+    资产图（没想好怎么画） -->
+    <div>
+        <p class="headtext">全市65岁以上老人数</p>
+        <p class="headtext">全市老龄化比例</p>
+        <p class="headtext">全市养老院养老人数</p>
+        <p class="headtext">全市社区养老人数</p>
+    </div>
+    <div>
+        <div class="headtext" id="num">123</div>
+        <div class="headtext" id="rate">321</div>
+        <div class="headtext" id="ylynum">123</div>
+        <div class="headtext" id="sqnum">321</div>
+    </div>
     <div>
         <div id='AgeSexGragh' style="width: 50%; height: 400px; float: left;"></div>
         <div id='BingGragh' style="width: 50%; height: 400px; float: right;"></div>
@@ -162,18 +177,17 @@
                 var tBing = cursor.value.ill;
                 if(bing.indexOf(tBing) === -1){
                     bing.push(tBing);
+                    console.log(bing);
                 }
                 index = bing.indexOf(tBing);
+                console.log(index);
                 num[index] += 1;
-                console.log(num);
                 cursor.continue();
             }
             else{
-                console.log(bing);
                 for(var i=0;i<bing.length;i++){
                     mydata.push({value:num[i], name:bing[i]});
                 }
-                console.log(mydata);
                 var option = {
                     title: {
                         text: '老龄人常见疾病统计',
@@ -208,7 +222,12 @@
                 bingC.setOption(option);     
             }
         }
-    } 
+    }
+    //show big data
+    function showBigData(){
+        var population = 100;
+
+    }
     //get age by birthday
     function GetAge(strBirthday){         
         var returnAge;  
