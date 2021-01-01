@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8" />
+    <!-- Tell IE to use the latest, best version. -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <title>养老院</title>
+    <script>
+        function login() {
+            var yid = document.getElementById('yid').value;
+            if (yid < 4 && yid > 0) {
+                sessionStorage.setItem('yid', document.getElementById('yid').value);
+                window.location.href = 'helloworld.html';
+            }
+            else {
+                window.alert("请输入有效养老院编号");
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: rgba(136, 214, 220, 0.8);
+        }
+
+        div {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            text-align: center;
+        }
+
+        input {
+            font-size: 30px;
+        }
+    </style>
+</head>
+
+<body>
+<div>
+    请输入养老院编号:<br>
+    <input type="text" id="yid" value="">
+    <input type="submit" value="登陆" onclick=login()>
+</div>
+
+</body>

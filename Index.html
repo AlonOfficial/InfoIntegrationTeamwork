@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%">
 
 <head>
   <!-- Use correct character set. -->
@@ -16,75 +16,96 @@
   <script src="https://cdn.bootcss.com/jquery-csv/1.0.4/jquery.csv.min.js"></script>
 
   <style>
-    body,
-    html {
-      margin: 0;
-      padding: 0;
-    }
-
-    a:hover {
-      color: red;
-    }
-
-    .mapEarth {
-      position: absolute;
-      width: 80%;
+    body {
       height: 100%;
-      display: inline-block;
-      float: right;
-      display: inline-block;
+      overflow-x: hidden;
+      z-index: 2;
     }
 
-    .menu {
-      float: left;
-      width: 20%;
-      height: 100%;
-    }
-
-    .menu div {
-      list-style: none;
-      height: 40px;
-      background-color: #F7F7F7;
+    #header {
+      background-color: rgb(136, 214, 220);
+      height: 10%;
+      color: white;
       text-align: center;
-      border: 0.2px solid #DFDFDF;
-
+      padding: 5px;
     }
 
-    .fontWeight {
-      font-weight: 800;
-      color: black;
+    #section {
+      width: 100%;
+      height: 80%;
+      float: left;
+      background-image: url(background.jpg);
+      background-repeat: no-repeat;
+      background-size: cover;
     }
 
-    a {
-      font-size: 14px;
-      font-family: Arial, "宋体";
-      line-height: 40px;
-      text-decoration: none;
-      color: #0a001f;
+    .float1 {
+      background-color: rgba(136, 214, 220, 0.8);
+      color: white;
+      position: absolute;
+      top: 60%;
+      left: 15%;
+      width: 15%;
+      height: 20%;
+      text-align: center;
+      margin-top: 0px;
+      z-index: 99 !important;
+      
+    }
+
+    a{
+      font-size: 40px;
+      color: white;
+      text-decoration:none;
+    }
+
+
+    #footer {
+      height: 5%;
+      background-color: rgb(136, 214, 220);
+      color: white;
+      clear: both;
+      text-align: center;
+      padding: 5px;
     }
   </style>
 </head>
 
-
 <body>
 
-  <a href="minzheng/helloworld.html">民政局入口</a><br />
-  <a href="laorenzinv/login.html">老人子女入口</a><br />
-  <a href="shequ/login.html">社区入口</a><br />
-  <a href="yanglaoyuan/helloworld.html">养老院入口</a><br />
+  <div id="header">
+    <h1>养老综合服务平台</h1>
+  </div>
+
+  <div id="section"></div>
+
+
+
+  <div class="float1" style="left:8%;">
+    <a href="minzheng/helloworld.html">民政局<br />入口</a><br />
+  </div>
+  <div class="float1" style="left:31%;">
+    <a href="laorenzinv/login.html">老人子女<br />入口</a><br />
+  </div>
+  <div class="float1" style="left:54%;">
+    <a href="shequ/login.html">社区<br />入口</a><br />
+  </div>
+  <div class="float1" style="left:76%;">
+    <a href="yanglaoyuan/login.html">养老院<br />入口</a><br />
+  </div>
+
+  </div>
+
+  <div id="footer">
+    Copyright ： 武汉大学遥感学院空信专业第六小组
+  </div>
+
+  
+  
+  
+  
 
   <script>
-
-    //       console.log(sguangchang);
-    //       console.log(sgongyuan);
-    //       console.log(sqicai);
-
-
-
-
-    //     //$('#sales').append('<tr><td>' + theTerritory + '</td><td>' + numEmployees + '</td><td>$' + theAmount + '</td></tr>');
-    //   });
-    // }
 
     var indexedDB = window.indexedDB;
     var db;
@@ -109,6 +130,7 @@
       addyanglaoyuan();
       addminzhengyanglaoyuan();
       addyanglaoyuanlaoren();
+      addyanglaoyuanbed();
       //银行数据导入
       addbank();
       //老人坐标数据导入
@@ -144,6 +166,11 @@
       };
       if (!db.objectStoreNames.contains("bank")) {
         objectStore = db.createObjectStore("bank", { keyPath: 'id' });
+      };
+      if (!db.objectStoreNames.contains("yanglaoyuanbed")) {
+        objectStore = db.createObjectStore("yanglaoyuanbed",{ autoIncrement: true });
+        objectStore.createIndex('yid', 'yid', { unique: false });
+        objectStore.createIndex('bid', 'bid', { unique: false });
       };
       if (!db.objectStoreNames.contains("latlng")) {
         objectStore = db.createObjectStore("latlng", { keyPath: 'id' });
@@ -331,6 +358,30 @@
       });
     }
 
+    //养老院-床位
+    function addyanglaoyuanbed(){
+      $(document).ready(function() {
+        //使用$.get()方法导入和解析CSV文件
+        $.get("source/yangbed.csv", function(theData) {
+          //$.csv.toObjects()将CSV数据转换为一个名为data的对象
+          var data = $.csv.toObjects(theData);
+          for(var row in data){
+            var count=0;
+            var line = [];
+            for(var item in data[row]){
+              line[count] = data[row][item];
+              count += 1;
+            }
+            var request = db.transaction(['yanglaoyuanbed'], 'readwrite')
+                    .objectStore("yanglaoyuanbed")
+                    .add({ yid: parseInt(line[0]), bid: parseInt(line[1]), used: line[2], id: line[3],name:line[4],type:line[5]});
+          }
+          console.log('床位信息建库成功');
+        });
+      });
+
+    }
+
     //银行-财产数据
     function addbank(){
       $(document).ready(function() {
@@ -353,8 +404,7 @@
                   .objectStore("bank")
                   .add({ id: parseInt(line[1]), ball: line[2], bin: line[3], bout: line[4]});
               }
-              //var theHtml = createTable(data);
-              //$('#theResult').html(theHtml);
+
           });
       });
     }
@@ -362,7 +412,6 @@
     //csv格式生成html表格
     function createTable(data) {
         var html = '';
-        
         if(data[0].constructor === Object) {
             html += '<tr>\r\n';
             for(var item in data[0]) {
@@ -398,7 +447,7 @@
                 }
                 var request = db.transaction(['latlng'], 'readwrite')
                   .objectStore("latlng")
-                  .add({ id: parseInt(line[0]), lng: parseFloat(line[1]), lat: parseFloat(line[2])});
+                  .add({ id:be, lng: parseFloat(line[1]), lat: parseFloat(line[2])});
               }
           });
       });
@@ -439,6 +488,11 @@
       var request = db.transaction(['yanglaoyuanqingqiu'], 'readwrite')
               .objectStore('yanglaoyuanqingqiu')
               .add({ yid, id,name,leixing,isok});
+    }
+    function addshenqingyly(){
+      var request = db.transaction(['shenqingyly'], 'readwrite')
+              .objectStore('shenqingyly')
+              .add({ yid, id,date,isok});
     }
 
   </script>
