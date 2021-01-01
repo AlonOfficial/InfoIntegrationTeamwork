@@ -19,12 +19,12 @@
 
 <body>
     <div class = "all">
-        <h1 align = "center" >您的基本信息</h1>
+        <h1 style="text-align: center;" >社区基本信息</h1>
         <div class = "data" >
-          <p id = "01" style = "font-size: 30px;"></p>
-          <p id = "02" style = "font-size: 30px;"></p>
-          <p id = "03" style = "font-size: 30px;"></p>
-          <p id = "04" style = "font-size: 30px;"></p>
+          <p id = "01" style = "font-size: 30px;white-space:pre;"></p>
+          <p id = "02" style = "font-size: 30px;white-space:pre;"></p>
+          <p id = "03" style = "font-size: 30px;white-space:pre;"></p>
+          <p id = "04" style = "font-size: 30px;white-space:pre;"></p>
         </div>
       </div>
     <script>
@@ -73,10 +73,9 @@
                $(document).ready(function() {
                  //基本信息
                  $("#01").text("姓名："+result.sname+"       "+"地址："+result.saddress);
-                 $("#02").text("管理员: "+result.smanager+"      "+"电话："+result.scontactnum);
-                 $("#03").text("员工数: "+result.sworkernum);
-                 
-                 
+                 $("#02").text("管理员: "+result.smanager+"         "+"电话："+result.scontactnum);
+                 $("#03").text("社区内有广场: "+result.sguangchang+"       "+"公园："+result.sgongyuan+"       "+"健身器材："+result.sqicai);
+                 $("#04").text("员工数: "+result.sworkernum);
                });
              
              } else {

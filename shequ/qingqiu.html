@@ -11,20 +11,40 @@
             content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
     />
     <title>社区入口</title>
+    <script src="../js/our.js"></script>
     <script src="../js/jquery-3.5.1.min.js"></script>
 
-    
+    <style>
+        table,tr,th,td
+        {
+            text-align:middle;
+            font-size: 20px;
+            height:40px;
+            border: 1px solid black;
+        }    
+        </style>
 </head>
 
 
 <body>
-    <div id="tableEntry" style = "font-size: 30px;"></div>
+    <h1 style="text-align: center;" >以下为社区内老人发来的请求</h1>
+    <table id="tableEntry" style = "font-size: 30px;">
+        <tr>
+            <th>请求号</th>
+            <th>姓名</th>
+            <th>id</th>
+            <th>性别</th>
+            <th>年龄</th>
+            <th>住址</th>
+            <th>类型</th>
+            <th>操作</th>
+        </tr>
+    </table>
 
     <script>
     var sid = parseInt(sessionStorage.getItem("sid"));
     console.log(sid);
 
-    tableEntry.innerHTML = '';
     var indexedDB = window.indexedDB;
 
 
@@ -62,7 +82,7 @@
             if (cursor) {
                 leixing[i] = cursor.value.leixing;
                 primaryKey[i] = cursor.primaryKey;
-                var tableRow = document.createElement('div');
+                var tableRow = document.createElement('tr');
                 
                 var request1 = db.transaction('hukou', "readonly").objectStore('hukou').get(cursor.value.id);
                 request1.onerror = function (event) {
@@ -73,22 +93,23 @@
                     result = event.target.result;
                     //注意请求id为数据库自动生成的primaryKey
                     tableRow.id = primaryKey[j];
-                    tableRow.innerHTML = '<tr>'+
+                    tableRow.innerHTML = 
                     '<td>' + (j+1) + '</td>'
                     + '<td>' + result.name + '</td>'
+                    + '<td>' + result.id + '</td>'
                     + '<td>' + result.gender + '</td>'
-                    + '<td>' + result.birthday + '</td>'
+                    + '<td>' + GetAge(result.birthday) + '</td>'
                     + '<td>' + result.address + '</td>'
                     + '<td>' + leixing[j] + '</td>'
+                    + '<td style = "color:red" onclick = deleteQingQiu('+primaryKey[j]+')>' + '完成' + '</td>';
 
-                    + '<td>' + '<input style = "font-size: 30px;" type="submit" value="完成" onclick=deleteQingQiu('+primaryKey[j]+') >'+'</td></tr>';
-                    //console.log(cursor.primaryKey);
                     j +=1;
+
                     tableEntry.appendChild(tableRow);
 
                 }
                 i +=1;
-                cursor.continue();console.log(cursor);
+                cursor.continue();
             }
             
 
