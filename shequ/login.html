@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%" >
 
 <head>
     <!-- Use correct character set. -->
@@ -22,11 +22,35 @@
             }
         }
     </script>
+    <style>
+        body
+        {
+            background-color: rgba(136, 214, 220, 0.8);
+        }
+        div{
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            text-align:center;
+        }
+        input{
+            font-size: 30px;
+        }
+
+    </style>
 </head>
 
 <body>
-    请输入社区号:<br>
+    <div>请输入社区号:</br>
     <input type="text" id="sid" value="">
     <input type="submit" value="登陆" onclick=login()>
+</div>
     
 </body>
+</html>
