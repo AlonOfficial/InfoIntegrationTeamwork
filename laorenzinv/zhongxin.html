@@ -50,7 +50,7 @@
       console.log('数据库打开成功');
     }
 
-    request.onupgradeneeded = function (e) {
+    request.onupgradeneeded = function (event) {
       db = event.target.result;
       console.log("版本变化");
 

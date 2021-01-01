@@ -12,17 +12,15 @@
     <th class="search-item">性别</th>
     <input class="item" id="vgender"> </input>
     <th class="search-item">年龄段</th>
-    <input list="companys" id="age-group" />
-    <datalist id="companys">
-        <option value="60岁以下">
-        <option value="60-70">
-        <option value="70-80">
-        <option value="80-90">
-        <option value="90岁以上">
+    <input id="txt_1" list="datalist_1"/>
+    <datalist id="datalist_1">
+        <option value="<60" data-id="<60">
+        <option value="60-70" data-id="60-70">
+        <option value="70-80" data-id="70-80">
+        <option value="80-90" data-id ="80-90">
+        <option value=">90" data-id =">90">
     </datalist>
-
-
-    <button onclick="MatchSearch()">搜索</button>
+<button onclick="MatchSearch()">搜索</button>
 </div>
 <div class="show-searchIno" id="search-result">
     <table id="older-searchInfo" class="search-table"></table>
@@ -31,11 +29,9 @@
 <script>
     //获取登录老人id，这个需要实现登录功能将id传过来
     var NursingId = 3;
-
     var olderNursinglist = new Array();
     //向服务器发送请求
     searchInfo_odler_request();
-
     function searchInfo_odler_request() {
         var indexedDB = window.indexedDB;
         var db;
@@ -43,7 +39,7 @@
             window.alert("你的浏览器不支持IndexedDB");
         }
 
-//打开数据库
+        //打开数据库
         var request = window.indexedDB.open("yanglao", 1);
         request.onerror = function (event) {
             console.log('数据库打开报错');
@@ -85,41 +81,30 @@
         }
     }
 
-
-    function fuzzySearch(db, keyword) {
-        var transaction = db.transaction("notes", "readonly");
-        var objectStore = transaction.objectStore("notes");
-        var request = objectStore.openCursor();
-        var most = 0;
-        request.onsuccess = function (event) {
-            var cursor = event.target.result;
-            if (cursor) {
-                if (cursor.value.word.indexOf(keyword) !== -1 && most <= 5) {
-                    most++;
-                }
-                cursor.continue();
-            }
-        };
-        console.log("there is some error!");
-        var list = olderNursinglist;
-    }
-
     function MatchSearch() {
         var vname = $("#vname").val();
         var vgender = $('#vgender').val();
-        var age = $('#age-group option:selected').val();
+        var vage;
+
+        var $options=$("#datalist_1").children();
+        for(var i=0;i<$options.length;i++){
+            if($options.eq(i).val().trim()==$("#txt_1").val().trim()){
+                vage = $options.eq(i).attr("data-id");
+                break;
+            }else{
+                vage = $("#txt_1").val();
+            }
+        }
+
         var arr = new Array(olderNursinglist.length);
         for (var j = 0; j < olderNursinglist.length; j++) {
             arr[j] = 1;
         }
 
-// var searchInfolist = new Array();
-        for(var i =0;i<olderNursinglist.length;i++){
-            console.log(olderNursinglist[i]);
-        }
-
-
-// 姓名判断
+        // var searchInfolist = new Array();
+        //姓名匹配搜索
+        if (vname ==""){
+        }else{
         if (vname.length != 0) {
             for (var j = 0, len = olderNursinglist.length; j < len; j++) {
                 var older = olderNursinglist[j];
@@ -128,29 +113,56 @@
                 }
             }
         }
-
-
-// 性别判断
-        if (vgender.length != 0) {
-            for (var j = 0, len = olderNursinglist.length; j < len; j++) {
-                var older = olderNursinglist[j];
-                if (older.gender != vgender) {
-                    arr[j] = 0;
-                }
-            }
         }
 
+       if(vgender==""){}else {
+           if (vgender.length != 0) {
+               for (var j = 0, len = olderNursinglist.length; j < len; j++) {
+                   var older = olderNursinglist[j];
+                   if (older.gender != vgender) {
+                       arr[j] = 0;
+                   }
+               }
+           }
+       }
 
-// // 年龄段判断
-// for(var j = 0,len=olderNursinglist.length; j < len; j++) {
-//     var older = olderNursinglist[j];
-//     if(older.age != vgender){
-//         arr[i] ==0;
-//     }
-// }
 
-//最终结果显示
-//    var html ="";
+       if(vage==''){}
+       else {
+           // 年龄段判断
+           for (var j = 0, len = olderNursinglist.length; j < len; j++) {
+               var older = olderNursinglist[j];
+               var ages = parseInt(new Date().getFullYear() - new Date(older.birthday).getFullYear());
+               if (vage == '<60') {
+                   if (ages > 60) {
+                       arr[j] = 0;
+                   }
+               } else if (vage == '60-70') {
+                   if (ages >= 70 || ages < 60) {
+                       arr[j] = 0;
+                   }
+               } else if (vage == '70-80') {
+                   if (ages >= 80 || ages < 70) {
+                       arr[j] = 0;
+                   }
+               } else if (vage == '80-90') {
+                   if (ages >= 90 || ages < 80) {
+                       arr[j] = 0;
+                   }
+               } else if (vage == '>90') {
+                   if (ages < 90) {
+                       arr[j] = 0;
+                   }
+               } else if (!isNaN(Number(vage))) {
+                   if (ages != Number(vage)) {
+                       arr[j] = 0;
+                   }
+               } else {
+               }
+           }
+       }
+
+        //最终结果显示
         var html = "";
         for (var j = 0, len = olderNursinglist.length; j < len; j++) {
             console.log(arr[j]);
@@ -164,7 +176,6 @@
                 html += '<tr>';
             }
         }
-
         $("#older-searchInfo").empty().append(html);
         console.log(typeof (vname), typeof (gender), typeof (age));
         console.log(vname.length);

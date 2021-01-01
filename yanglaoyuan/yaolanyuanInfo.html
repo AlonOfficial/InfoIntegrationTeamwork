@@ -35,57 +35,56 @@
     </table>
 </div>
 
+<!--功能函数脚本-->
 <script>
-
-    //获取登录老人id
-    // var NursingId = parseInt(sessionStorage.getItem("id"));
-    var NursingId = 3;
-
-    searchInfo_odler_request();
-    //向服务器发送请求
-   function searchInfo_odler_request() {
-        var indexedDB = window.indexedDB;
-        var db;
-        if (!indexedDB) {
-            window.alert("你的浏览器不支持IndexedDB");
-        }
-        //打开数据库
-        var request = window.indexedDB.open("yanglao", 1);
-        request.onerror = function (event) {
-            console.log('数据库打开报错');
+    function get_yaolaoyuanInfo(){
+        var res1 = db.transaction(['yanglaoyuan'], 'readwrite').objectStore('yanglaoyuan').get(NursingId);
+        res1.onerror = function (event) {
+            console.log('事务失败');
         };
-        request.onupgradeneeded = function (e) {
-            db = event.target.result;
-            console.log("版本变化");
+        res1.onsuccess = function (event) {
+            var name = res1.result;
+            $("#nursing-name").append(name.yname) ;
+            $("#nursing-area").append(name.area) ;
+            $("#nursing-principal").append(name.fuzeren) ;
+            $("#nursing-phone").append(name.phone) ;
+            $("#nursing-bedNum").append(name.bednum) ;
+            $("#nursing-olderNum").append(name.personnum) ;
+            $("#nursing-address").append(name.address) ;
 
-        }
-        request.onsuccess = function (event) {
-            db = event.target.result;
-            var res1 = db.transaction(['yanglaoyuan'], 'readwrite').objectStore('yanglaoyuan').get(NursingId);
-            res1.onerror = function (event) {
-                console.log('事务失败');
-            };
-
-            res1.onsuccess = function (event) {
-                var name = res1.result;
-                $("#nursing-name").append(name.yname) ;
-                $("#nursing-area").append(name.area) ;
-                $("#nursing-principal").append(name.fuzeren) ;
-                $("#nursing-phone").append(name.phone) ;
-                $("#nursing-bedNum").append(name.bednum) ;
-                $("#nursing-olderNum").append(name.personnum) ;
-                $("#nursing-address").append(name.address) ;
-
-                console.log(name);
-            };
-        }
+            console.log(name);
+        };
     }
 
+</script>
 
 
+<!--启动函数脚本-->
+<script>
 
-
-
+    var NursingId = parseInt(sessionStorage.getItem("sid"));
+    var indexedDB = window.indexedDB;
+    var db;
+    if (!indexedDB) {
+        window.alert("你的浏览器不支持IndexedDB");
+    }
+    var request = window.indexedDB.open("yanglao", 1);
+    request.onerror = function (event) {
+        console.log('数据库打开报错');
+    };
+    request.onupgradeneeded = function (e) {
+        db = event.target.result;
+        console.log("版本变化");
+    }
+    request.onsuccess = function (event) {
+        db = event.target.result;
+        readandshow();
+        console.log('数据库打开成功');
+    }
+    request.onsuccess = function (event) {
+        db = event.target.result;
+        get_yaolaoyuanInfo();
+    }
 </script>
 
 

@@ -2,22 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>条形图</title>
-    <script src="../../js/jquery-3.5.1.min.js"></script>
-    <!-- 引入图表样式需要的js文件echarts -->
-    <script src="../../js/echarts.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>饼图</title>
 </head>
 <body>
-<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-<div id="main" style="width: 600px;height:400px;"></div>
+<div id="tiaoxingtu" style="width: 600px;height:500px;"></div>
+<div id="shanxingtu" style="width: 600px;height:500px;"></div>
 
-
+<script src="../../js/echarts.common.js"></script>
 <script>
-    //获取登录老人id，这个需要实现登录功能将id传过来
-    var NursingId = 1;
+    function olderAges(birthday) {
+    return new Date().getFullYear() - new Date(birthday).getFullYear();
+}</script>
+<script>
+
+    var NursingId = parseInt(sessionStorage.getItem("sid"));
+
+    var numMale =0;
+    var numFemale =0;
     var olderNursinglist = new Array();
     //向服务器发送请求
+
 
     var indexedDB = window.indexedDB;
     var db;
@@ -39,23 +45,48 @@
         db = event.target.result;
         var store = db.transaction(['yanglaoyuanlaoren'], 'readonly').objectStore('yanglaoyuanlaoren');
         var c = store.openCursor();//打开游标
+
         c.onsuccess = function (e) {//成功执行回调
             var cursor = e.target.result;
             if (cursor) {//如果存在
                 var older = cursor.value;
                 if (older.yid == NursingId) {
                     olderNursinglist.push(older);
+                    if(older.gender=='男'){
+                        numMale+=1;
+                    }
+                    else{
+                        numFemale+=1;
+                    }
                 }
                 cursor.continue();//继续下一个
             }
 
-
         }
     }
 
+    function grahPie() {
+        var myChart = echarts.init(document.getElementById('shanxingtu'));
+        // 指定图表的配置项和数据 放在option对象里
+        var option = {
+            title: {
+                text: '养老院老人性别分布'
+            },
+            tooltip: {},
+            series: [{
+                type: 'pie',
+                data: [
+                    {value:numMale, name:'男'},
+                    {value:numFemale, name:'女'}
+                ]
+            }]
+        };
+        // 基于准备好的dom，初始化echarts实例
+        myChart.setOption(option);
+    }
     function graph() {
         // 1.基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('main'));
+        var myChart = echarts.init(document.getElementById('tiaoxingtu'));
 
         var countArr = new Array(5);
         for (var i = 0; i < 5; i++) {
@@ -101,17 +132,16 @@
         myChart.setOption(option);
     }
 
-    setTimeout(() => {
+    function showImage(){
+        grahPie();
         graph();
-    }, 1000);
-
-
-    function olderAges(birthday) {
-        return new Date().getFullYear() - new Date(birthday).getFullYear();
     }
 
+    setTimeout(() => {
+        showImage();
+    }, 500);
+
+
 </script>
-
-
 </body>
 </html>
