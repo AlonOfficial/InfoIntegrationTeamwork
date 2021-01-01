@@ -108,14 +108,17 @@
 
   <script>
     var mname;
-    var now = new Date();
-    var year = now.getFullYear();
-    var month = now.getMonth()+1;
-    var day = now.getDay();
-    var hour = now.getHours();
-    var minute = now.getMinutes();
-    var second = now.getSeconds();
-    var date = year+"年"+month+"月"+day+"日"+hour+"时"+minute+"分"+second+"秒";
+    
+    
+
+    // var year = now.getFullYear();
+    // var month = now.getMonth()+1;
+    // var day = now.getDay();
+    // var hour = now.getHours();
+    // var minute = now.getMinutes();
+    // var second = now.getSeconds();
+    // var date = year+"年"+month+"月"+day+"日"+hour+"时"+minute+"分"+second+"秒";
+
 
     var id = parseInt(sessionStorage.getItem("id"));
     
@@ -169,6 +172,8 @@
       res1.onsuccess = function (event) {
         console.log("拿到老人数据");
         name = res1.result.name;
+        var now = new Date();
+        var date = now.toLocaleString();
         //判断老人在社区还是养老院
         var res2 = db.transaction(['shequlaoren'], 'readonly').objectStore('shequlaoren')
               .get(id);

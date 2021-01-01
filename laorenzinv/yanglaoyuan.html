@@ -243,14 +243,9 @@ getData = function(){
   }
   
   shenqingyanglaoyuan = function(){
+
     var now = new Date();
-    var year = now.getFullYear();
-    var month = now.getMonth()+1;
-    var day = now.getDay();
-    var hour = now.getHours();
-    var minute = now.getMinutes();
-    var second = now.getSeconds();
-    var date = year+"年"+month+"月"+day+"日"+hour+"时"+minute+"分"+second+"秒";
+    var date = now.toLocaleString();
     if(flag ==2){
       var ressq = db.transaction(['shenqingyly'], 'readwrite').objectStore('shenqingyly')
               .add({ yid: yid[shenqingflag], id: id, date:date,isok:0});
