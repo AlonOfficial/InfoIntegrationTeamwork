@@ -25,7 +25,7 @@
     <p id = "p3" style="font-size: 30px;"></p>
     <p id = "p4" style="font-size: 30px;"></p>
     <p id = "p5" style="font-size: 30px;"></p>
-    <input type="submit" value="提交申请" onclick=shenqingyanglaoyuan() >
+    <input type="submit" style="width: 200px;height: 80px;" value="提交申请" onclick=shenqingyanglaoyuan() >
 
 <script>
    
@@ -243,9 +243,17 @@ getData = function(){
   }
   
   shenqingyanglaoyuan = function(){
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth()+1;
+    var day = now.getDay();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+    var date = year+"年"+month+"月"+day+"日"+hour+"时"+minute+"分"+second+"秒";
     if(flag ==2){
       var ressq = db.transaction(['shenqingyly'], 'readwrite').objectStore('shenqingyly')
-              .add({ yid: yid[shenqingflag], id: id, isok:0});
+              .add({ yid: yid[shenqingflag], id: id, date:date,isok:0});
       ressq.onsuccess = function(event){
         alert("申请成功，养老院负责人将尽快为您办理");
 

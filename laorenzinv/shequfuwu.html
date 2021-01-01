@@ -19,21 +19,92 @@
 <body>
 
   <style>
+    .ripple {
+				position: relative;
+				/*//隐藏溢出的径向渐变背景*/
+				overflow: hidden;
+			}
+			
+			.ripple:after {
+				content: "";
+				display: block;
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				pointer-events: none;
+				/*//设置径向渐变*/
+				background-image: radial-gradient(circle, #666 10%, transparent 10.01%);
+				background-repeat: no-repeat;
+				background-position: 50%;
+				transform: scale(10, 10);
+				opacity: 0;
+				transition: transform .3s, opacity .5s;
+			}
+			
+			.ripple:active:after {
+				transform: scale(0, 0);
+				opacity: .3;
+				/*//设置初始状态*/
+				transition: 0s;
+			}
+			.btn-sign{
+				border-width:0px;
+		
+				 width: 200px;
+				 height: 200px;
+			}
+     
+
 
 
   </style>
 
 
-  <h1>告诉我们您的需要</h1>
-  <input type="button" id="lifa" style="font-size: 50px;" value="理发" onclick="qingqiu()"></input>
-  <input type="button" id="songcan" style="font-size: 50px;" value="送餐" onclick="qingqiu()"></input>
-  <input type="button" id="jiuyi" style="font-size: 50px;" value="陪同就医" onclick="qingqiu()"></input>
-  <input type="button" id="huli" style="font-size: 50px;" value="护理" onclick="qingqiu()"></input>
-  <input type="button" id="jiazheng" style="font-size: 50px;" value="家政" onclick="qingqiu()"></input>
-  <input type="button" id="zuoche" style="font-size: 50px;" value="坐车" onclick="qingqiu()"></input>
-  <input type="button" id="weixiu" style="font-size: 50px;" value="维修" onclick="qingqiu()"></input>
+  <h1 style="text-align: center">告诉我们您的需要</h1>
   
 
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center"><input type ="button" id="lifa" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/cuthair.png) no-repeat 0 0;" name = "理发" onclick="qingqiu()"></input> </td>
+      <td align="center"><input type ="button" id="songcan" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/food.png) no-repeat 0 0;" name = "送餐" onclick="qingqiu()"></input></td>
+      <td align="center"><input type ="button" id="jiuyi" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/doctor.png) no-repeat 0 0;" name = "就医" onclick="qingqiu()"></input></td>
+      <td align="center"><input type ="button" id="huli" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/nurse.png) no-repeat 0 0;" name = "护理" onclick="qingqiu()"></input></td>
+      <td align="center"><input type ="button" id="jiazheng" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/clean.png) no-repeat 0 0;" name = "家政" onclick="qingqiu()"></input></input></td>
+      <td align="center"><input type ="button" id="zuoche" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/car.png) no-repeat 0 0;" name = "坐车" onclick="qingqiu()"></input></td>
+
+
+    </tr>
+    <tr>
+      <td align="center">理发</td>
+      <td align="center">送餐</td>
+      <td align="center">就医</td>
+      <td align="center">护理</td>
+      <td align="center">家政</td>
+      <td align="center">坐车</td>
+    </tr>
+  </table>
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center"><input type ="button" id="weixiu" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/xiu.png) no-repeat 0 0;" name = "维修" onclick="qingqiu()"></input> </td>
+      <td align="center"><input type ="button" id="peiban" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/peiban.png) no-repeat 0 0;" name = "陪伴" onclick="qingqiu()"></input></td>
+      <td align="center"><input type ="button" id="tijian" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/tijian.png) no-repeat 0 0;" name = "体检" onclick="qingqiu()"></input></td>
+      <td align="center"><input type ="button" id="songyao" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/yao.png) no-repeat 0 0;" name = "送药" onclick="qingqiu()"></input></td>
+      <td align="center"><input type ="button" id="yule" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/dance.png) no-repeat 0 0;" name = "娱乐" onclick="qingqiu()"></input></input></td>
+      <td align="center"><input type ="button" id="zixun" class="btn-sign btn btn-default ripple btn-lg" style="background:url(img/zixun.png) no-repeat 0 0;" name = "咨询" onclick="qingqiu()"></input></td>
+
+
+    </tr>
+    <tr>
+      <td align="center">维修</td>
+      <td align="center">陪伴</td>
+      <td align="center">体检</td>
+      <td align="center">送药</td>
+      <td align="center">娱乐</td>
+      <td align="center">咨询</td>
+    </tr>
+  </table>
 
   <script>
     var mname;
@@ -43,7 +114,7 @@
     //$("input").click(function (e) {
     $("input").off("click").on("click", function (e) {
       mid = $(e.target).attr("id");
-      mname = document.getElementById(mid).value;
+      mname = document.getElementById(mid).name;
     });
 
     
@@ -109,7 +180,7 @@
                 res3.onsuccess = function (event) {
                   console.log('写入成功');
                 }
-                alert("您当前居住于社区中，我们已联系社区志愿者尽快帮您" + mname);
+                alert("您当前居住于社区中，我们已联系社区志愿者尽快为您提供" + mname+"服务");
 
               }else{
                 var res4 = db.transaction(['yanglaoyuanlaoren'], 'readonly').objectStore('yanglaoyuanlaoren')
@@ -130,7 +201,7 @@
                             console.log('写入成功');
 
                           };
-                          alert("您当前居住于养老院中，我们已联系养老院尽快帮您" + mname);
+                          alert("您当前居住于养老院中，我们已联系社区志愿者尽快为您提供" + mname+"服务");
 
 
                        }else{
