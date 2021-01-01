@@ -23,7 +23,7 @@
     }
 
     a:hover {
-      color: red;
+      color: #ff0000;
     }
 
     .mapEarth {
@@ -341,7 +341,7 @@
             }
             var request = db.transaction(['yanglaoyuanbed'], 'readwrite')
                     .objectStore("yanglaoyuanbed")
-                    .add({ yid: parseInt(line[0]), bid: parseInt(line[1]), used: line[2], id: line[3],name:line[4],sex:line[5]});
+                    .add({ yid: parseInt(line[0]), bid: parseInt(line[1]), used: line[2], id: line[3],name:line[4],type:line[5]});
           }
           console.log('床位信息建库成功');
         });

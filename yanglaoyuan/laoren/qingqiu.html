@@ -40,10 +40,8 @@
 </div>
 <script>
 
-    //登录请求获得
-    var yid = 2
 
-
+    var yid = parseInt(sessionStorage.getItem("sid"));
     $("#check-in").click(function()
     {
         var obj = $("#register");
