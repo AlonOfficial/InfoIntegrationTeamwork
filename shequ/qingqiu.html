@@ -68,7 +68,7 @@
     function readandshow() {
         //核心遍历查找语句，使用了index与cursor遍历
         var request = db.transaction('shequqingqiu', "readonly").objectStore('shequqingqiu').index('sid').openCursor(sid);
-        //双数组解决异步问题
+        //利用数组储存结果，解决异步问题
         var i = 0;
         var j = 0;
         var leixing = new Array();

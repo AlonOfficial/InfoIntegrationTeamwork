@@ -1,22 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- Use correct character set. -->
-    <meta charset="utf-8"/>
-    <!-- Tell IE to use the latest, best version. -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
-    />
-    <title>养老院入口</title>
-    <script src="../js/jquery-3.5.1.min.js"></script>
+<html lang="zh-CN">
 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <title>监控信息</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #url {
+            width: 100%;
+        }
+
+        .btn-container {
+            margin: 10px;
+        }
+
+        #myPlayer {
+            max-width: 600px;
+            width: 100%;
+        }
+    </style>
+    <script src="../js/ezuikit.js"></script>
+    <script src="../js/jquery-3.5.1.min.js"></script>
 </head>
 
-
 <body>
+<!-- ezopen://open.ys7.com/f01018a141094b7fa138b9d0b856507b[.hd].live.[rtmp|hls|ws|flv|m3u8] http://hls.open.ys7.com/openlive/f01018a141094b7fa138b9d0b856507b.hd.m3u8-->
+<textarea id="url" placeholder="这里输入直播地址">https://hls01open.ys7.com/openlive/2e78ed17c1394e5b838ee20efc5dc376.hd.m3u8</textarea>
+<div class="btn-container">
+    <button id="init">播放</button>
+    <button id="stop">结束</button>
+</div>
 
+<video
+        id="myPlayer"
+        autoplay
+        src=""
+        controls
+        playsInline
+        webkit-playsinline
+>
+</video>
+
+<script>
+    $('#init').click(function () {
+        var url = $('#url').val().trim();
+        $('#myPlayer').attr("src", url);
+        var player = new EZUIKit.EZUIPlayer('myPlayer');
+        // 日志
+        player.on('log', log);
+
+        function log(str) {
+            var div = document.createElement('DIV');
+            div.innerHTML = (new Date()).Format('yyyy-MM-dd hh:mm:ss.S') + JSON.stringify(str);
+            document.body.appendChild(div);
+        }
+        $("#stop").click(function () {
+            player.stop();
+        })
+    });
+</script>
 </body>
+
 </html>
