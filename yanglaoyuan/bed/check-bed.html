@@ -5,16 +5,12 @@
     <title>查看床位</title>
     <script src="../../js/jquery-3.5.1.min.js"></script>
     <style>
-        /*body{*/
-        /*    margin: 0;*/
-        /*    padding: 0;*/
-        /*    !*width: 80%;*!*/
-        /*}*/
-        .bedlist{
-            margin:0 auto;
-            /*position: relative;*/
+
+        .bedlist {
+            margin: 0 auto;
         }
-        .item{
+
+        .item {
             width: 150px;
             height: 150px;
             margin-right: 20px;
@@ -24,10 +20,12 @@
             float: left;
             background-color: #9ed3ff;
         }
-        ul li{
+
+        ul li {
             list-style: none;
         }
-        .btnlist{
+
+        .btnlist {
             text-align: center;
         }
     </style>
@@ -36,71 +34,159 @@
 
 <h4 style="text-align: center">床位使用情况如下 </h4>
 <div class="btnlist">
-    <input type ='button' value="已使用">
-    <input type="button" value='未使用'>
-    <input type="button" value='返回'>
+    <input type='button' onclick="fun_used()" value="已使用">
+    <input type="button" onclick="fun_no_used()"  value='未使用'>
+    <input type="button" onclick="getData()" value="所有">
 </div>
 
-<div class="bedlist" >
-    <ul id ='bed-container'></ul>
+<div class="bedlist">
+    <ul id='bed-container'></ul>
 </div>
+
 
 <script>
     //获取登录老人id，这个需要实现登录功能将id传过来
     var NursingId = parseInt(sessionStorage.getItem("yid"));
+
     var olderNursinglist = new Array();
     //向服务器发送请求
-    searchInfo_odler_request();
-    function searchInfo_odler_request() {
-        var indexedDB = window.indexedDB;
-        var db;
-        if (!indexedDB) {
-            window.alert("你的浏览器不支持IndexedDB");
-        }
+    var indexedDB = window.indexedDB;
+    var db;
+    if (!indexedDB) {
+        window.alert("你的浏览器不支持IndexedDB");
+    }
 
-        //打开数据库
-        var request = window.indexedDB.open("yanglao", 1);
-        request.onerror = function (event) {
-            console.log('数据库打开报错');
-        };
-        request.onupgradeneeded = function (e) {
-            db = event.target.result;
-            console.log("版本变化");
-        }
+    //打开数据库
+    var request = window.indexedDB.open("yanglao", 1);
+    request.onerror = function (event) {
+        console.log('数据库打开报错');
+    };
+    request.onupgradeneeded = function (e) {
+        db = event.target.result;
+        console.log("版本变化");
+    }
 
-        request.onsuccess = function (event) {
-            db = event.target.result;
-            var store = db.transaction(['yanglaoyuanbed'], 'readonly').objectStore('yanglaoyuanbed');
-            var c = store.openCursor();//打开游标
-            c.onsuccess = function (e) {//成功执行回调
-                var cursor = e.target.result;
-                if (cursor) {//如果存在
-                    var older = cursor.value;
-                    if (older.yid == NursingId) {
-                        olderNursinglist.push(older);
-                        var bid = older.bid;
-                        var id = older.id;
-                        var name = older.name;
-                        var sex = older.type;
-                        var used =older.used;
-                        var tag;
-                        if (sex=='男'){tag = bid+'-M'; }
-                        else{ tag = bid+'-F';}
-                        var html='<li> <div class="item" id='+tag+'>' +
-                            '<div style="width: 150px,height:40%,display:inline-block">床位号:'+bid+'| 类型:'+sex+'</div>' +
-                            '<div style="width: 150px,height:20%">是否使用:  '+ used+'</div>';
-                        if(used=='是'){
-                            html +='<div style="width: 150px,height:20%">id:  '+ id+'</spn>' +
-                                '<div style="width: 150px,height:20%">姓名:  '+ name+'</div>'
-                        }
-                        html += '</div></li>'
-                        $("#bed-container").append(html);
+
+    request.onsuccess = function (event) {
+        db = event.target.result;
+        getData()
+    }
+    // 所有床位信息
+    function getData() {
+        $("#bed-container").empty();
+        var store = db.transaction(['yanglaoyuanbed'], 'readonly').objectStore('yanglaoyuanbed');
+        var c = store.index('yid').openCursor(IDBKeyRange.only(NursingId));//打开游标
+        c.onsuccess = function (e) {//成功执行回调
+            var cursor = e.target.result;
+            if (cursor) {//如果存在
+                var bedinfo = cursor.value;
+                olderNursinglist.push(bedinfo);
+                var bid = bedinfo.bid;
+                var type = bedinfo.type;
+                var used = bedinfo.used;
+                var id = bedinfo.id;
+                var name = bedinfo.name;
+
+                var tag;
+                if (type == '男') {
+                    tag = bid + '-M';
+                } else {
+                    tag = bid + '-F';
+                }
+                var html = "";
+                html += '<li> <div class="item" id=' + tag + '>';
+                html += '<div style="width: 150px;height:40% display:inline-block">床位号:' + bid + '| 类型:' + type + '</div>';
+                html += '<div style="width: 150px;height:20%">是否使用:  ' + used + '</div>';
+                html += '<div style="width: 150px;height:20%">id:  ' + id + '</spn>'
+                html += '<div style="width: 150px;height:20%">姓名:  ' + name + '</div>'
+                html += '</div></li>'
+                $("#bed-container").append(html);
+
+                cursor.continue();//继续下一个
+            }
+        }
+        c.onerror = function (e) {
+            alert("事务失败！");
+        }
+    }
+    //已使用床位信息
+    function fun_used() {
+        $("#bed-container").empty();
+        var store = db.transaction(['yanglaoyuanbed'], 'readonly').objectStore('yanglaoyuanbed');
+        var c = store.index('yid').openCursor(IDBKeyRange.only(NursingId));//打开游标
+        c.onsuccess = function (e) {//成功执行回调
+            var cursor = e.target.result;
+            if (cursor) {//如果存在
+                var bedinfo = cursor.value;
+                if(bedinfo.id>0){
+                    olderNursinglist.push(bedinfo);
+                    var bid = bedinfo.bid;
+                    var type = bedinfo.type;
+                    var used = bedinfo.used;
+                    var id = bedinfo.id;
+                    var name = bedinfo.name;
+
+                    var tag;
+                    if (type == '男') {
+                        tag = bid + '-M';
+                    } else {
+                        tag = bid + '-F';
                     }
-                    cursor.continue();//继续下一个
+                    var html = "";
+                    html += '<li> <div class="item" id=' + tag + '>';
+                    html += '<div style="width: 150px;height:40% display:inline-block">床位号:' + bid + '| 类型:' + type + '</div>';
+                    html += '<div style="width: 150px;height:20%">是否使用:  ' + used + '</div>';
+                    html += '<div style="width: 150px;height:20%">id:  ' + id + '</spn>'
+                    html += '<div style="width: 150px;height:20%">姓名:  ' + name + '</div>'
+                    html += '</div></li>'
+                    $("#bed-container").append(html);
                 }
 
-
+                cursor.continue();//继续下一个
             }
+        }
+        c.onerror = function (e) {
+            alert("事务失败！");
+        }
+    }
+    //未使用床位信息
+    function fun_no_used() {
+        $("#bed-container").empty();
+        var store = db.transaction(['yanglaoyuanbed'], 'readonly').objectStore('yanglaoyuanbed');
+        var c = store.index('yid').openCursor(IDBKeyRange.only(NursingId));//打开游标
+        c.onsuccess = function (e) {//成功执行回调
+            var cursor = e.target.result;
+            if (cursor) {//如果存在
+                var bedinfo = cursor.value;
+                if(bedinfo.id==0){
+                    olderNursinglist.push(bedinfo);
+                    var bid = bedinfo.bid;
+                    var type = bedinfo.type;
+                    var used = bedinfo.used;
+                    var id = bedinfo.id;
+                    var name = bedinfo.name;
+
+                    var tag;
+                    if (type == '男') {
+                        tag = bid + '-M';
+                    } else {
+                        tag = bid + '-F';
+                    }
+                    var html = "";
+                    html += '<li> <div class="item" id=' + tag + '>';
+                    html += '<div style="width: 150px;height:40% display:inline-block">床位号:' + bid + '| 类型:' + type + '</div>';
+                    html += '<div style="width: 150px;height:20%">是否使用:  ' + used + '</div>';
+                    html += '<div style="width: 150px;height:20%">id:  ' + id + '</spn>'
+                    html += '<div style="width: 150px;height:20%">姓名:  ' + name + '</div>'
+                    html += '</div></li>'
+                    $("#bed-container").append(html);
+                }
+
+                cursor.continue();//继续下一个
+            }
+        }
+        c.onerror = function (e) {
+            alert("事务失败！");
         }
     }
 

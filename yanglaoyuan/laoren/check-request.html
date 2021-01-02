@@ -1,26 +1,31 @@
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>查看请求</title>
-    <script src = '../../js/jquery-3.5.1.min.js'></script>
-    <script src = '../../js/jquery-3.5.1.min.js'></script>
+    <script src='../../js/jquery-3.5.1.min.js'></script>
+    <script src='../../js/jquery-3.5.1.min.js'></script>
     <style>
-        .d{
+        .d {
             /*color: red;*/
             display: none;
         }
+
     </style>
 </head>
 <body>
-<h>test</h>
+<h3>当前收到的加入申请如下</h3>
 <div class="show-request" id="request-result">
     <table id="older-request" class="request-table"></table>
 </div>
 
+
 <script>
     var NursingId = parseInt(sessionStorage.getItem("yid"));
 
+    var birthday, name, gender;
+    var yname;
+    var bid, type;
+    var id;
 
     var olderNursinglist = new Array();
     //向服务器发送请求
@@ -30,7 +35,6 @@
         window.alert("你的浏览器不支持IndexedDB");
     }
 
-
     //打开数据库
     var request = window.indexedDB.open("yanglao", 1);
     request.onerror = function (event) {
@@ -39,117 +43,257 @@
     request.onupgradeneeded = function (e) {
         db = event.target.result;
         console.log("版本变化");
-
     }
+
     request.onsuccess = function (event) {
         db = event.target.result;
+        showData();
     }
 
-
-    //读取老人数据以表格形式表现
-    function readandshow(id) {
-        var arr=new Array();
-        var res = db.transaction(['hukou'], 'readwrite').objectStore('hukou').get(id);
-        res.onerror = function (event) {
-            console.log('事务失败');
-        };
-        res.onsuccess = function (event) {
-            if (res.result) {
-                arr.push(res.result.name);
-                arr.push(res.result.gender);
-                arr.push(res.result.birthday);
-            }
-        }
-        return arr;
-    }
 
     function showData() {
         var store = db.transaction(['shenqingyly'], 'readonly').objectStore('shenqingyly');
-        var c = store.openCursor();//打开游标
+        var c = store.index("yid").openCursor(IDBKeyRange.only(NursingId));//打开游标
         c.onsuccess = function (e) {//成功执行回调
             var cursor = e.target.result;
             if (cursor) {//如果存在
                 var older = cursor.value;
-                if (older.yid == NursingId) {
-                    olderNursinglist.push(older);
-                    var id = older.id;
-                    // var res = db.transaction(['hukou'], 'readwrite').objectStore('hukou').get(id);
-                    // res.onerror = function (event) {
-                    //     console.log('事务失败');
-                    // };
-                    // res.onsuccess = function (event) {
-                    //     if (res.result) {
-                    //         arr.push(res.result.name);
-                    //         arr.push(res.result.gender);
-                    //         arr.push(res.result.birthday);
-                    //     }
-                    // }
-
-                    // var name = arr[1];
-                    // alert(name)
-                    // var gender = older.gender;
-                    // var birthday = older.birthday;
-                    // var bedid = older.bedid;
+                olderNursinglist.push(older);
+                var id = older.id;
+                var date = older.date;
+                var request1 = db.transaction('hukou', "readonly").objectStore('hukou').get(id);
+                request1.onerror = function (event) {
+                    console.log('事务失败');
+                };
+                request1.onsuccess = function (event) {
+                    result = event.target.result;
+                    var name = result.name
+                    var gender = result.gender
+                    var birthday = result.birthday;
                     var html = "";
-                    html += '<tr>';
-                    html += '<th> Id</th>' + '<td>' + id + '</td>';
-                    // html += '<th> Name</th>' + '<td>' + name + '</td>';
-                    // html += '<th> gender</th>' + '<td>' + gender + '</td>';
-                    // html += '<th> birthday</th>' + '<td>' + birthday + '</td>';
+                    html += '<tr id='+id+'>';
+                    html += '<th> 身份证：</th>' + '<td>' + id + '</td>';
+                    html += '<th> 姓名：</th>' + '<td>' + name + '</td>';
+                    html += '<th> 性别：</th>' + '<td>' + gender + '</td>';
+                    html += '<th> 生日：</th>' + '<td>' + birthday + '</td>';
+                    html += '<th> 请求日期：</th>' + '<td>' + date + '</td>';
                     // html += '<th> bedid</th>' + '<td>' + bedid + '</td>';
-                    html += '<td><input type="button" id="delete" value="删除"> </input></td>'
-                    html += '<td><input type="button" id="confirm" value="确认"> </input></td>'
+                    html += '<td><input type="button" id="delete"    value="删除"> </input></td>'
+                    html += '<td><input type="button" id="confirm"   value="确认"> </input></td>'
                     html += '</tr>';
                     $("#older-request").append(html);
                 }
+
                 cursor.continue();//继续下一个
             }
-
-
         }
     }
 
-    setTimeout(() => {
-        showData();
-    }, 500);
 
 </script>
+
 
 <script>
 
     $(document).on('click', '#delete', function () {
-        var id =$(this).parent().siblings().eq(1).text();
-        var request = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly').openCursor()
-        request.onerror = function (event) {
-            console.log('事务失败');
+
+        id = $(this).parent().siblings().eq(1).text();
+        type = $(this).parent().siblings().eq(5).text();
+
+         //进行符合条件的数据进行删除
+        var store = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly');
+        var c = store.index('id').openCursor(IDBKeyRange.only(parseInt(id)));
+        c.onerror = function (event) {
+            console.log('删除失败');
         };
-        request.onsuccess = function (event) {
+        c.onsuccess = function (event) {
             var cursor = event.target.result;
             if (cursor) {
-                var older = cursor.value;
-                alert(older.id==id)
-                if (older.id == id) {
+
+                if (cursor.value.date == date) {
                     cursor.delete();
-                    console.log('删除成功');
+                    alert('删除成功');
                 }
+                cursor.continue()
             }
-            cursor.continue();
         }
         $(this).parent().parent().remove();
     });
 
-    $(document).on('click', '#confirm', function () {
-        $(this).addClass('d');
-        var text =[];
-        $(this).parent().parent().children('td').each(function(j){  // 遍历 tr 的各个 td
-            text.push($(this).html());
-        });
 
-        var id = text[0];
-        var name =text[1];
-        var gender = text[2];
-        var birthday =text[3];
+    <!--接受操作处理-->
+    $(document).on('click', '#confirm', function () {
+
+
+
+        var sid = $(this).parent().siblings().eq(1).text();
+        id = sid;
+        type = $(this).parent().siblings().eq(5).text();
+
+
+        get_hukou(sid);
+        get_yanglaoyuan(NursingId);
+
+        get_bed(NursingId,type)
+        setTimeout(() => {
+            process(sid);
+        }, 1000);
+
+
+
     });
+
+    function get_hukou(sid) {
+        var sid = 2;
+        var request = window.indexedDB.open("yanglao", 1);
+        request.onerror = function (event) {
+            console.log('数据库打开报错');
+        };
+        request.onsuccess = function (event) {
+            db_hukou = event.target.result;
+            // //户口表操作 获取生日、姓名、性别
+            var res = db_hukou.transaction(['hukou'], 'readonly').objectStore('hukou').get(sid);
+            res.onerror = function (event) {
+                console.log('事务失败');
+            };
+            res.onsuccess = function (event) {
+                console.log(res.result)
+                if (res.result) {
+                    name = res.result.name;
+                    gender = res.result.gender
+                    birthday = res.result.birthday
+
+                }
+            }
+        }
+    }
+
+    function get_yanglaoyuan(nursingid) {
+        var request = window.indexedDB.open("yanglao", 1);
+        request.onerror = function (event) {
+            console.log('数据库打开报错');
+        };
+        request.onsuccess = function (event) {
+            db_yanglaoyuan = event.target.result;
+            // //户口表操作 获取生日、姓名、性别
+            //养老院表 获取养老院的名字
+            var res_yanglaoyuan = db_yanglaoyuan.transaction(['yanglaoyuan'], 'readwrite').objectStore('yanglaoyuan').get(nursingid);
+            res_yanglaoyuan.onerror = function (event) {
+                console.log('事务失败');
+            };
+            res_yanglaoyuan.onsuccess = function (event) {
+                var value = event.target.result;
+                yname = value.yname;
+                console.log(yname)
+            }
+        }
+    }
+
+    function get_bed(nursingid,type) {
+        var request = window.indexedDB.open("yanglao", 1);
+        request.onerror = function (event) {
+            console.log('数据库打开报错');
+        };
+        request.onsuccess = function (event) {
+            db_bed = event.target.result;
+            var store = db_bed.transaction(['yanglaoyuanbed'], 'readonly').objectStore('yanglaoyuanbed');
+            var res_bed = store.index('yid').openCursor(IDBKeyRange.only(nursingid));
+            res_bed.onerror = function (e) {
+                conso.log("事务失败！");
+            }
+            res_bed.onsuccess = function (e) {
+                var cursor = e.target.result;
+                if (cursor) {
+                    var bed_infos = cursor.value;
+                    if (bed_infos.type == type && bed_infos.id == 0) {
+                        bid = bed_infos.bid;
+                        console.log(bid)
+                    }
+                    cursor.continue();
+                }
+            }
+
+        }
+    }
+
+    //增加老人信息到养老院系统
+    function add_older() {
+        request = db.transaction(['yanglaoyuanlaoren'], 'readwrite')
+            .objectStore("yanglaoyuanlaoren")
+            .add({
+                id: parseInt(id),
+                name: name,
+                yid: NursingId,
+                yname: yname,
+                gender: gender,
+                birthday: birthday,
+                bedid: bid
+            });
+        request.onsuccess = function (e) {
+            // alert("入住登记成功:已安排到" + bid + '号床位');
+        }
+        request.error = function (e) {
+            alert('提交失败！')
+        }
+    }
+
+    //修改床位信息
+    function mod_bed_inf0() {
+
+        //直接更新好像不行
+        //删除已有的床位信息
+        var store = db.transaction(['yanglaoyuanbed'], 'readwrite')
+            .objectStore('yanglaoyuanbed')
+        var c = store.index('yid').openCursor(IDBKeyRange.only(parseInt(NursingId)));
+        c.onerror = function (event) {
+            console.log('删除失败');
+        };
+        c.onsuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                if(cursor.value.bid ==id){
+                    cursor.delete();
+                }
+                cursor.continue()
+            }
+        }
+
+        //添加新的床位信息
+        var res = db.transaction(['yanglaoyuanbed'], 'readwrite')
+            .objectStore('yanglaoyuanbed')
+            .put({bid: bid, id: parseInt(id), name: name, type: type, yid: NursingId, used: '是'})
+        res.onsuccess = function (e) {
+            alert(name + '已经入住到' + type + '类型' + bid + "号床位！");
+            var traceList = $('tr[id='+id+']');
+            console.log(traceList)
+            $.each(traceList,function(index,item){
+                $(item).remove();
+            })
+        }
+    }
+
+    //删除已经接受的请求
+    function delete_apply(id) {
+        //进行符合条件的数据进行删除
+        var store = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly');
+        var c = store.index('id').openCursor(IDBKeyRange.only(parseInt(id)));
+        c.onerror = function (event) {
+            console.log('删除失败');
+        };
+        c.onsuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                cursor.delete();
+                cursor.continue()
+            }
+        }
+    }
+
+    function process(id) {
+        add_older();
+        mod_bed_inf0();
+        delete_apply(id);
+    }
 
 
 </script>
