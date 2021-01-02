@@ -18,6 +18,121 @@
 
 
 <body>
+    <div class="search" id="search">
+        <b class="txt">机构编号:</b>
+        <input type="text" name="sid" id="sid" class="shuru">
+        <b class="txt">机构名称:</b>
+        <input type="text" name="sname" id="sname" class="shuru">
+        <b class="txt">机构位置:</b>
+        <input type="text" name="spo" id="spo">
+        <input type="submit" onclick="search()" value="查询" id="search" class="shuru">
+        <input type="submit" onclick="undosearch()" value="取消" id="undosearch" class="shuru">
+    </div>
+    <div class="table" id="info">
+        <table id="sinfo" border="1px"></table>
+    </div>
 
+    <style>
+        .bg{
+            background-color: grey;
+        }
+    </style>
+
+    <script>
+        //我吐了，标签是个对象，getElmentById会让变量也指向那个标签，所以修改会
+        //产生的影响会一直保留下来，所以暂时不能实现“只读一次”
+        //显示所有的信息
+        //加载社区所有信息
+
+        loaddata();
+        var html0;
+        function loaddata(){
+            var request = window.indexedDB.open("yanglao", 1);
+            request.onerror = function (event) {
+                console.log('数据库打开报错');
+            };
+            request.onsuccess = function(event){
+                console.log('iam loading sinfo');
+                db = event.target.result;
+                var res = db.transaction('shequ').objectStore('shequ');
+                var count = 0;
+                html = '<tr>'+
+                            '<th>编号</th>'+
+                            '<th>机构名称</th>'+
+                            '<th>负责人</th>'+
+                            '<th>联系方式</th>'+
+                            '<th>员工数目</th>'+
+                            '<th>位置</th>'+
+                        '</tr>';
+                res.openCursor().onsuccess = function(event){
+                    var cursor = event.target.result;
+                    if(cursor){
+                        count++;
+                        console.log("i am reading one sinfo")
+                        var v = cursor.value;
+                        html += '<tr>';
+                        html += '<td>' + v.sid.toString() + '</td>';
+                        html += '<td>' + v.sname + '</td>';
+                        html += '<td>' + v.smanager + '</td>';
+                        html += '<td>' + v.scontactnum + '</td>';
+                        html += '<td>' + v.sworkernum + '</td>';
+                        html += '<td>' + v.saddress + '</td>';
+                        html += '</tr>';
+                        cursor.continue();
+                    }
+                    else{
+                        html0 = html;
+                        $("#sinfo").html(html);
+                    }
+                }
+            }
+            //记录所有原始信息
+        }
+        
+        function search(){
+            $("#sinfo").html(html0);
+            var sid = $("#sid").val();
+            var sname = $("#sname").val();
+            var spo = $("#spo").val();
+            console.log(sid, sname, spo);
+
+            table = document.getElementById("sinfo");
+            tr = table.getElementsByTagName("tr");
+            console.log(tr);
+            for(var i=1; i<tr.length; i++){
+                td = tr[i].getElementsByTagName("td");
+                console.log(td);
+                //判断是否有id
+                if(sid === td[0].innerHTML){
+                    console.log('yes');
+                    tr[i].bgColor = "green";
+                    break;
+                }
+                //根据名字判断
+                if(sname != ""){
+                    var tname = td[1].innerHTML;
+                    if(tname.indexOf(sname)>-1){
+                        tr[i].bgColor = "green";
+                    }
+                }
+                //根据地点判断
+                if(spo != ""){
+                    var tpo = td[5].innerHTML;
+                    if(tpo.indexOf(spo)>-1){
+                        tr[i].bgColor = "green";
+                    }
+                }
+            }
+        }
+        
+        function undosearch(){
+            $("#sinfo").html(html0);
+            $("#sid").val("");
+            $("#sname").val("");
+            $("#spo").val("");
+        }
+    </script>
 </body>
+
+
 </html>

@@ -18,6 +18,114 @@
 
 
 <body>
+    <div class="search" id="search">
+        <b class="txt">养老院编号:</b>
+        <input type="text" id="yid" class="shuru">
+        <b class="txt">养老院名称:</b>
+        <input type="text" id="yname" class="shuru">
+        <b class="txt">养老院位置:</b>
+        <input type="text" id="ypo">
+        <input type="submit" onclick="search()" value="查询" id="search" class="shuru">
+        <input type="submit" onclick="undosearch()" value="取消" id="undosearch" class="shuru">
+    </div>
+    <div class="table" id="info">
+        <table id="yinfo" border="1px"></table>
+    </div>
+
+    <script>
+        loaddata();
+        var html0;
+        function loaddata(){
+            var request = window.indexedDB.open("yanglao", 1);
+            request.onerror = function (event) {
+                console.log('数据库打开报错');
+            };
+            request.onsuccess = function(event){
+                console.log('iam loading sinfo');
+                db = event.target.result;
+                var res = db.transaction('yanglaoyuan').objectStore('yanglaoyuan');
+                var count = 0;
+                html = '<tr>'+
+                            '<th>编号</th>'+
+                            '<th>机构名称</th>'+
+                            '<th>负责人</th>'+
+                            '<th>联系方式</th>'+
+                            '<th>员工数目</th>'+
+                            '<th>床位</th>'+
+                            '<th>月开销</th>'+
+                            '<th>占地面积</th>'+
+                            '<th>位置</th>'+
+                        '</tr>';
+                res.openCursor().onsuccess = function(event){
+                    var cursor = event.target.result;
+                    if(cursor){
+                        count++;
+                        console.log("i am reading one sinfo")
+                        var v = cursor.value;
+                        html += '<tr>';
+                        html += '<td>' + v.yid.toString() + '</td>';
+                        html += '<td>' + v.yname + '</td>';
+                        html += '<td>' + v.fuzeren + '</td>';
+                        html += '<td>' + v.phone + '</td>';
+                        html += '<td>' + v.personnum + '</td>';
+                        html += '<td>' + v.bednum + '</td>';
+                        html += '<td>' + v.cost + '</td>';
+                        html += '<td>' + v.area + '</td>';
+                        html += '<td>' + v.address + '</td>';
+                        html += '</tr>';
+                        cursor.continue();
+                    }
+                    else{
+                        html0 = html;
+                        $("#yinfo").html(html);
+                    }
+                }
+            }
+            //记录所有原始信息
+        }
+     
+        function search(){
+            $("#yinfo").html(html0);
+            var yid = $("#yid").val();
+            var yname = $("#yname").val();
+            var ypo = $("#ypo").val();
+
+            table = document.getElementById("yinfo");
+            tr = table.getElementsByTagName("tr");
+            console.log(tr);
+            for(var i=1; i<tr.length; i++){
+                td = tr[i].getElementsByTagName("td");
+                console.log(td);
+                //判断是否有id
+                if(yid === td[0].innerHTML){
+                    console.log('yes');
+                    tr[i].bgColor = "green";
+                    break;
+                }
+                //根据名字判断
+                if(yname != ""){
+                    var tname = td[1].innerHTML;
+                    if(tname.indexOf(yname)>-1){
+                        tr[i].bgColor = "green";
+                    }
+                }
+                //根据地点判断
+                if(ypo != ""){
+                    var tpo = td[8].innerHTML;
+                    if(tpo.indexOf(ypo)>-1){
+                        tr[i].bgColor = "green";
+                    }
+                }
+            }
+        }
+        
+        function undosearch(){
+            $("#yinfo").html(html0);
+            $("#yid").val("");
+            $("#yname").val("");
+            $("#ypo").val("");
+        }
+    </script>
 
 </body>
 </html>
