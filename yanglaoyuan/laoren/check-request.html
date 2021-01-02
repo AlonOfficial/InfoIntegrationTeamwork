@@ -21,6 +21,12 @@
 
 <script>
     var NursingId = parseInt(sessionStorage.getItem("yid"));
+    var NursingId = 1;
+
+    var birthday, name, gender;
+    var yname;
+    var bid, type;
+    var id;
 
     var birthday, name, gender;
     var yname;
@@ -50,7 +56,6 @@
         showData();
     }
 
-
     function showData() {
         var store = db.transaction(['shenqingyly'], 'readonly').objectStore('shenqingyly');
         var c = store.index("yid").openCursor(IDBKeyRange.only(NursingId));//打开游标
@@ -71,7 +76,9 @@
                     var gender = result.gender
                     var birthday = result.birthday;
                     var html = "";
+
                     html += '<tr id='+id+'>';
+                    html += '<tr>';
                     html += '<th> 身份证：</th>' + '<td>' + id + '</td>';
                     html += '<th> 姓名：</th>' + '<td>' + name + '</td>';
                     html += '<th> 性别：</th>' + '<td>' + gender + '</td>';
@@ -100,7 +107,7 @@
         id = $(this).parent().siblings().eq(1).text();
         type = $(this).parent().siblings().eq(5).text();
 
-         //进行符合条件的数据进行删除
+        //进行符合条件的数据进行删除
         var store = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly');
         var c = store.index('id').openCursor(IDBKeyRange.only(parseInt(id)));
         c.onerror = function (event) {
@@ -119,7 +126,6 @@
         }
         $(this).parent().parent().remove();
     });
-
 
     <!--接受操作处理-->
     $(document).on('click', '#confirm', function () {
@@ -147,6 +153,7 @@
 
 
     });
+
 
     function get_hukou(sid) {
         var sid = 2;
@@ -244,11 +251,36 @@
 
     //修改床位信息
     function mod_bed_inf0() {
+
+        //直接更新好像不行
+        //删除已有的床位信息
+        var store = db.transaction(['yanglaoyuanbed'], 'readwrite')
+            .objectStore('yanglaoyuanbed')
+        var c = store.index('yid').openCursor(IDBKeyRange.only(parseInt(NursingId)));
+        c.onerror = function (event) {
+            console.log('删除失败');
+        };
+        c.onsuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                if(cursor.value.bid ==id){
+                    cursor.delete();
+                }
+                cursor.continue()
+            }
+        }
+
+        //添加新的床位信息
         var res = db.transaction(['yanglaoyuanbed'], 'readwrite')
             .objectStore('yanglaoyuanbed')
             .put({bid: bid, id: parseInt(id), name: name, type: type, yid: NursingId, used: '是'})
         res.onsuccess = function (e) {
             alert(name + '已经入住到' + type + '类型' + bid + "号床位！");
+            var traceList = $('tr[id='+id+']');
+            console.log(traceList)
+            $.each(traceList,function(index,item){
+                $(item).remove();
+            })
         }
     }
 
