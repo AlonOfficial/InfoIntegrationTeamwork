@@ -43,6 +43,7 @@
             <th>同住子女</th>
             <th>同住配偶</th>
             <th>同住他人</th>
+            <th>详情</th>
             <th>操作</th>
         </tr>
 
@@ -111,6 +112,7 @@
                             + '<td>' + cursor.value.children + '</td>'
                             + '<td>' + cursor.value.spouse + '</td>'
                             + '<td>' + cursor.value.others + '</td>'
+                            + '<td style = "color:red" onclick = detailInfo(' + result.id + ')>' + '详情' + '</td>'
                             + '<td style = "color:red" onclick = deleteID(' + result.id + ')>' + '删除' + '</td>';
 
 
@@ -169,6 +171,11 @@
             request.onsuccess = function (event) {
                 window.alert('删除成功');
             }
+        }
+
+        function detailInfo(id){
+            sessionStorage.setItem('id', id);
+            window.location.href = '../laorenzinv/zhongxin.html';
         }
 
 

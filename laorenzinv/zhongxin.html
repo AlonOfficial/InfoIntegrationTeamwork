@@ -17,7 +17,7 @@
 
 
 <body>
- 
+
   <!--
   <div class="all">
     <h1 align="center">您的基本信息</h1>
@@ -29,26 +29,29 @@
     </div>
   </div>
 -->
-<h1 >您的基本信息</h1>
-<div>
-<div id = "01" style="width:800px; height: 50px; border: 1px solid; font-size: 30px;"></div>
-<div style="height: 200px;">
-    <div id = "02z" style="width: 800px; height: 300px; border: 1px solid; float: left;font-size: 30px;">
-      <p id = "020"></p>
-      <p id = "021"></p>
-      <p id = "022"></p>
-      <p id = "023"></p>
+  <h1>您的基本信息</h1>
+  <div id="photo" style="position: absolute;left:510px; width: 300px; height: 350px; border: 1px solid;font-size: 30px;background-size: cover;"></div>
+
+  <div>
+    <div id="01" style="width:500px; height: 50px; border: 1px solid; font-size: 30px;"></div>
+    <div style="height: 310px;">
+      <div id="02z" style="width: 500px; height: 300px; border: 1px solid; float: left;font-size: 30px;">
+        <p id="020"></p>
+        <p id="021"></p>
+        <p id="022"></p>
+        <p id="023"></p>
+      </div>
     </div>
-</div>
-<div id = "03" style="width: 800px; height: 200px; border: 1px solid;font-size: 30px;"></div>
-<div id = "04" style="width: 800px; height: 200px; border: 1px solid;font-size: 30px;"></div>
-</div>
+    
+    <div id="03" style="width: 800px; height: 200px; border: 1px solid;font-size: 30px;"></div>
+    <div id="04" style="width: 800px; height: 200px; border: 1px solid;font-size: 30px;"></div>
+  </div>
 
   <script>
     //获取登录老人id
     var id = parseInt(sessionStorage.getItem("id"));
 
-
+    document.getElementById("photo").style.backgroundImage="url(../source/laorenPhoto/"+id+".jpg)";
     var indexedDB = window.indexedDB;
     var db;
     if (!indexedDB) {
@@ -88,12 +91,12 @@
           console.log('name: ' + res.result.name);
           $(document).ready(function () {
             //基本信息
-            $("#01").text("姓名：" + res.result.name +" "+ "身份证号：" + id);
+            $("#01").text("姓名：" + res.result.name + " " + "身份证号：" + id);
             $("#020").text("性别：" + res.result.gender);
             $("#021").text("政治面貌：" + res.result.polistatus);
             $("#022").text("籍贯：" + res.result.birthplace);
             $("#023").text("生日：" + res.result.birthday);
-            $("#03").text("婚姻状况："+res.result.marriage);
+            $("#03").text("婚姻状况：" + res.result.marriage);
 
 
             //判断居住情况，核心
@@ -125,7 +128,7 @@
                     $("#04").text("居住状况：养老院居住");
                   }
 
-                  else {$("#04").text("居住状况：未在社区或养老院")}
+                  else { $("#04").text("居住状况：未在社区或养老院") }
                 }
               }
             }
