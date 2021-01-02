@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>饼图</title>
+    <style>
+        .chart{
+            margin: 5px auto;
+        }
+
+    </style>
 </head>
 <body>
-<div id="tiaoxingtu" style="width: 600px;height:500px;"></div>
-<div id="shanxingtu" style="width: 600px;height:500px;"></div>
+<div  class="chart" id="tiaoxingtu" style="width: 600px;height:500px;"></div>
+<div  class="chart"  id="shanxingtu" style="width: 600px;height:500px;"></div>
 <script src="../../js/echarts.common.js"></script>
 <script>
 
@@ -75,7 +81,8 @@
         // 指定图表的配置项和数据 放在option对象里
         var option = {
             title: {
-                text: '养老院床位类型分布'
+                text: '养老院床位类型分布',
+                left:'center'
             },
             tooltip: {},
             series: [{
@@ -104,11 +111,13 @@
         // 2.指定图表的配置项和数据 放在option对象里面
         var option = {
             title: {
-                text: '养老院床位使用情况'
+                text: '养老院床位使用情况',
+                left:'center'
             },
             tooltip: {},
             legend: {
-                data: ['使用状况']
+                data: ['使用状况'],
+                x: 'right' //居右显示
             },
             xAxis: {
                 data: ["已使用", "空闲"]

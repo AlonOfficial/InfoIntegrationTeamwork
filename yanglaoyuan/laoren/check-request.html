@@ -9,19 +9,56 @@
             /*color: red;*/
             display: none;
         }
+        .title{
+            margin: 0 280px;
+        }
+
+        table tr td{
+            border:1px solid #F03;
+
+            text-align:center;
+
+            line-height:30px;
+
+        }
+        table tr th {
+            border:1px solid #F03;
+            text-align:center;
+            line-height:30px;
+
+        }
+       .title, th ,td {
+            font-family: 华文宋体;
+            font-size: 14px;
+        }
+        table {
+            width:800px;
+
+            border-collapse:collapse;
+
+            margin:25px 0;
+
+        }
 
     </style>
 </head>
 <body>
-<h3>当前收到的加入申请如下</h3>
+<h3 class="title">当前收到的加入申请如下</h3>
 <div class="show-request" id="request-result">
-    <table id="older-request" class="request-table"></table>
+    <table id="older-request" class="request-table">
+        <tr>
+            <th>身份证</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>生日</th>
+            <th>申请时间</th>
+            <th>删除</th>
+            <th>确认</th>
+        </tr>
+    </table>
 </div>
-
-
 <script>
     var NursingId = parseInt(sessionStorage.getItem("yid"));
-    var NursingId = 1;
 
     var birthday, name, gender;
     var yname;
@@ -59,6 +96,7 @@
     function showData() {
         var store = db.transaction(['shenqingyly'], 'readonly').objectStore('shenqingyly');
         var c = store.index("yid").openCursor(IDBKeyRange.only(NursingId));//打开游标
+
         c.onsuccess = function (e) {//成功执行回调
             var cursor = e.target.result;
             if (cursor) {//如果存在
@@ -76,15 +114,12 @@
                     var gender = result.gender
                     var birthday = result.birthday;
                     var html = "";
-
                     html += '<tr id='+id+'>';
-                    html += '<tr>';
-                    html += '<th> 身份证：</th>' + '<td>' + id + '</td>';
-                    html += '<th> 姓名：</th>' + '<td>' + name + '</td>';
-                    html += '<th> 性别：</th>' + '<td>' + gender + '</td>';
-                    html += '<th> 生日：</th>' + '<td>' + birthday + '</td>';
-                    html += '<th> 请求日期：</th>' + '<td>' + date + '</td>';
-                    // html += '<th> bedid</th>' + '<td>' + bedid + '</td>';
+                    html += '<td>' + id + '</td>';
+                    html += '<td>' + name + '</td>';
+                    html +=  '<td>' + gender + '</td>';
+                    html += '<td>' + birthday + '</td>';
+                    html += '<td>' + date + '</td>';
                     html += '<td><input type="button" id="delete"    value="删除"> </input></td>'
                     html += '<td><input type="button" id="confirm"   value="确认"> </input></td>'
                     html += '</tr>';
@@ -96,7 +131,6 @@
         }
     }
 
-
 </script>
 
 
@@ -104,9 +138,8 @@
 
     $(document).on('click', '#delete', function () {
 
-        id = $(this).parent().siblings().eq(1).text();
-        type = $(this).parent().siblings().eq(5).text();
-
+        id = $(this).parent().siblings().eq(0).text();
+        type = $(this).parent().siblings().eq(2).text();
         //进行符合条件的数据进行删除
         var store = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly');
         var c = store.index('id').openCursor(IDBKeyRange.only(parseInt(id)));
@@ -130,11 +163,9 @@
     <!--接受操作处理-->
     $(document).on('click', '#confirm', function () {
 
-
-
-        var sid = $(this).parent().siblings().eq(1).text();
+        var sid = $(this).parent().siblings().eq(0).text();
         id = sid;
-        type = $(this).parent().siblings().eq(5).text();
+        type = $(this).parent().siblings().eq(2).text();
 
 
         get_hukou(sid);
@@ -145,11 +176,6 @@
             process(sid);
         }, 1000);
 
-        var traceList = $('tr[id='+sid+']');
-        console.log(traceList)
-        $.each(traceList,function(index,item){
-            $(item).remove();
-        })
 
 
     });
@@ -275,9 +301,9 @@
             .objectStore('yanglaoyuanbed')
             .put({bid: bid, id: parseInt(id), name: name, type: type, yid: NursingId, used: '是'})
         res.onsuccess = function (e) {
+
             alert(name + '已经入住到' + type + '类型' + bid + "号床位！");
             var traceList = $('tr[id='+id+']');
-            console.log(traceList)
             $.each(traceList,function(index,item){
                 $(item).remove();
             })

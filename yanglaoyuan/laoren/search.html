@@ -4,6 +4,35 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="../../js/jquery-3.5.1.min.js"></script>
+    <style>
+
+        table tr td{
+            border:1px solid #F03;
+            text-align:center;
+            line-height:30px;
+
+        }
+        table tr th{
+            border:1px solid #F03;
+            text-align:center;
+            line-height:30px;
+
+        }
+        button, .search-menu, th ,td {
+            font-family: 华文宋体;
+            font-size: 14px;
+        }
+
+        table {
+            width:800px;
+            border-collapse:collapse;
+            margin:25px 0;
+        }
+      .search-menu {
+          padding-left: 50px;
+        }
+
+    </style>
 </head>
 <body>
 <div class="search-menu">
@@ -12,7 +41,7 @@
     <th class="search-item">性别</th>
     <input class="item" id="vgender"> </input>
     <th class="search-item">年龄段</th>
-    <input id="txt_1" list="datalist_1"/>
+    <input  class="item"  id="txt_1" list="datalist_1"/>
     <datalist id="datalist_1">
         <option value="<60" data-id="<60">
         <option value="60-70" data-id="60-70">
@@ -20,10 +49,22 @@
         <option value="80-90" data-id ="80-90">
         <option value=">90" data-id =">90">
     </datalist>
-<button onclick="MatchSearch()">搜索</button>
+   <button onclick="MatchSearch()">搜索</button>
 </div>
 <div class="show-searchIno" id="search-result">
-    <table id="older-searchInfo" class="search-table"></table>
+
+    <table id="older-searchInfo"  class="search-table">
+        <tr>
+            <th>身份证号</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>生日</th>
+            <th>床号</th>
+            <th>详情</th>
+            <th>删除</th>
+        </tr>
+    </table>
+
 </div>
 
 <script>
@@ -62,14 +103,17 @@
                         var gender = older.gender;
                         var birthday = older.birthday;
                         var bedid = older.bedid;
-                        var html = "";
-                        html += '<tr>';
-                        html += '<th> Name</th>' + '<td>' + name + '</td>';
-                        html += '<th> gender</th>' + '<td>' + gender + '</td>';
-                        html += '<th> birthday</th>' + '<td>' + birthday + '</td>';
-                        html += '<th> bedid</th>' + '<td>' + bedid + '</td>';
-                        html += '<tr>';
-                        html += '</tr>';
+                        var id = older.id;
+                        var html = "<tr>";
+                        html +='<td>' + id + '</td>';
+                        html +='<td>' + name + '</td>';
+                        html += '<td>' + gender + '</td>';
+                        html +=  '<td>' + birthday + '</td>';
+                        html += '<td>' + bedid + '</td>';
+                        html += '<td id="info">'+'<a href="#">' + "详情" +'</a>' + '</td>';
+                        html += '<td id="delete">'+'<a href="#">' + "删除" +'</a>' + '</td>';
+                        html += "</tr>";
+
                         $("#older-searchInfo").append(html);
                     }
                     cursor.continue();//继续下一个
@@ -160,28 +204,98 @@
        }
 
         //最终结果显示
-        var html = "";
+        var html = "<tr><th>身份证号</th><th>姓名</th><th>性别</th><th>生日</th><th>床号</th><th>详情</th><th>删除</th></tr>";
         for (var j = 0, len = olderNursinglist.length; j < len; j++) {
-            console.log(arr[j]);
             if (arr[j] == 1) {
-                var olderInfo = olderNursinglist[j];
-                html += "<tr>"
-                html += '<th> Name</th>' + '<td>' + olderInfo.name + '</td>';
-                html += '<th> gender</th>' + '<td>' + olderInfo.gender + '</td>';
-                html += '<th> birthday</th>' + '<td>' + olderInfo.birthday + '</td>';
-                html += '<th> bedid</th>' + '<td>' + olderInfo.bedid + '</td>';
+                var older = olderNursinglist[j];
+                var name = older.name;
+                var gender = older.gender;
+                var birthday = older.birthday;
+                var bedid = older.bedid;
+                var id = older.id;
+                html += "<tr>";
+                html +='<td>' + id + '</td>';
+                html +='<td>' + name + '</td>';
+                html += '<td>' + gender + '</td>';
+                html +=  '<td>' + birthday + '</td>';
+                html += '<td>' + bedid + '</td>';
+                html += '<td id="info">'+'<a href="#">' + "详情" +'</a>' + '</td>';
+                html += '<td id="delete">'+'<a href="#">' + "删除" +'</a>' + '</td>';
                 html += '<tr>';
             }
         }
         $("#older-searchInfo").empty().append(html);
-        console.log(typeof (vname), typeof (gender), typeof (age));
-        console.log(vname.length);
-        vgender = $("vgender"),
-            vage = $("age-group");
-        for (var j = 0, len = olderNursinglist.length; j < len; j++) {
-            console.log(olderNursinglist[j]);
-        }
     }
+
+
+    $(document).on('click', '#info', function () {
+        var id = $(this).siblings().eq(0).text();
+        sessionStorage.setItem('id', id);
+        window.location.href = '../../laorenzinv/zhongxin.html';
+    })
+
+    $(document).on('click', '#delete', function () {
+        var id = $(this).siblings().eq(0).text();
+        var type =$(this).siblings().eq(2).text();
+        var bid =$(this).siblings().eq(4).text();
+
+
+        //打开数据库
+        var request = window.indexedDB.open("yanglao", 1);
+        request.onerror = function (event) {
+            console.log('数据库打开报错');
+        };
+        request.onsuccess = function (event) {
+            db = event.target.result;
+
+            /* 删除养老院老人信息*/
+            var store = db.transaction('yanglaoyuanlaoren', "readwrite").objectStore('yanglaoyuanlaoren');
+            var c = store.index('yid').openCursor(IDBKeyRange.only(parseInt(NursingId)));
+            c.onerror = function (event) {
+                console.log('删除失败');
+            };
+            c.onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    if (cursor.value.id == id) {
+                        cursor.delete();
+                        alert("删除成功！");
+                    }
+                    cursor.continue()
+                }
+            }
+
+            /* 更改床位信息*/
+
+            //删除已有的床位信息
+            var store = db.transaction(['yanglaoyuanbed'], 'readwrite')
+                .objectStore('yanglaoyuanbed')
+            var c = store.index('yid').openCursor(IDBKeyRange.only(parseInt(NursingId)));
+            c.onerror = function (event) {
+                console.log('删除失败');
+            };
+            c.onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    if(cursor.value.id == id){
+                        cursor.delete();
+                    }
+                    cursor.continue()
+                }
+            }
+
+            //添加新的床位信息
+            var res = db.transaction(['yanglaoyuanbed'], 'readwrite')
+                .objectStore('yanglaoyuanbed')
+                .put({bid: bid, id: parseInt(0), name: '无', type: type, yid: NursingId, used: '否'})
+            res.onsuccess = function (e) {
+                console.log('床位数据更新成功！')
+            }
+        }
+
+        $(this).parent().remove();
+
+    })
 
 </script>
 
