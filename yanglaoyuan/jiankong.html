@@ -51,14 +51,14 @@
         var url = $('#url').val().trim();
         $('#myPlayer').attr("src", url);
         var player = new EZUIKit.EZUIPlayer('myPlayer');
-        // 日志
+        日志
         player.on('log', log);
 
-        function log(str) {
-            var div = document.createElement('DIV');
-            div.innerHTML = (new Date()).Format('yyyy-MM-dd hh:mm:ss.S') + JSON.stringify(str);
-            document.body.appendChild(div);
-        }
+        // function log(str) {
+        //     var div = document.createElement('DIV');
+        //     div.innerHTML = (new Date()).Format('yyyy-MM-dd hh:mm:ss.S') + JSON.stringify(str);
+        //     document.body.appendChild(div);
+        // }
         $("#stop").click(function () {
             player.stop();
         })

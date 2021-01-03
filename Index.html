@@ -179,6 +179,12 @@
             objectStore.createIndex('yid', 'yid', {unique: false});
             objectStore.createIndex('id', 'id', {unique: false});
         }
+
+        if (!db.objectStoreNames.contains("yanglaoyuanolder_active")) {
+            objectStore = db.createObjectStore("yanglaoyuanolder_active", {autoIncrement: true});
+            objectStore.createIndex('id', 'id', {unique: false});
+            objectStore.createIndex('yid', 'yid', {unique: false});
+        }
         ;
         if (!db.objectStoreNames.contains("shenqingyly")) {
             objectStore = db.createObjectStore("shenqingyly", {keyPath: 'id'});
@@ -558,8 +564,8 @@
 
     //请求列表
     function addshequqingqiu() {
-        var request = db.transaction(['hequqingqiu'], 'readwrite')
-            .objectStore('hequqingqiu')
+        var request = db.transaction(['shequqingqiu'], 'readwrite')
+            .objectStore('shequqingqiu')
             .add({sid, id, name, leixing, isok});
     }
 
@@ -567,6 +573,12 @@
         var request = db.transaction(['yanglaoyuanqingqiu'], 'readwrite')
             .objectStore('yanglaoyuanqingqiu')
             .add({yid, id, name, leixing, isok});
+    }
+
+    function active_yanglaoyuanolder() {
+        var request = db.transaction(['yanglaoyuanolder_active'], 'readwrite')
+            .objectStore('yanglaoyuanolder_active')
+            .add({yid,id, name, operation,date, isok});
     }
 
     function addshenqingyly() {

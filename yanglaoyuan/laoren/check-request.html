@@ -27,9 +27,14 @@
             line-height:30px;
 
         }
-       .title, th ,td {
+        th ,td {
             font-family: 华文宋体;
             font-size: 14px;
+        }
+        .title {
+            margin-left: 300px;
+            font-size: 28px;
+            font-family: 华文宋体;
         }
         table {
             width:800px;
@@ -179,7 +184,6 @@
 
 
     function get_hukou(sid) {
-        var sid = 2;
         var request = window.indexedDB.open("yanglao", 1);
         request.onerror = function (event) {
             console.log('数据库打开报错');
@@ -325,10 +329,20 @@
         // }
     }
 
+    function add_active() {
+        var c = db.transaction('yanglaoyuanolder_active', "readwrite").objectStore('yanglaoyuanolder_active')
+            .put({yid:NursingId,id:id,name:name,operation:'入住',date:new Date().toLocaleString(),isok:'正常'})
+        c.onsuccess = function (e) {
+            var  result = e.target.result;
+        }
+
+    }
+
     function process(id) {
         add_older();
         mod_bed_inf0();
         delete_apply(id);
+        add_active()
     }
 
 

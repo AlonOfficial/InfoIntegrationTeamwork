@@ -235,7 +235,10 @@
     })
 
     $(document).on('click', '#delete', function () {
+
+
         var id = $(this).siblings().eq(0).text();
+        var name = $(this).siblings().eq(1).text();
 
         var type =$(this).siblings().eq(2).text();
         var bid =$(this).siblings().eq(4).text();
@@ -258,6 +261,13 @@
             // };
             c.onsuccess = function (event) {
                 window.alert("删除成功！");
+                var now = new Date().toLocaleString();
+                var c = db.transaction('yanglaoyuanolder_active', "readwrite").objectStore('yanglaoyuanolder_active')
+                           .put({yid:NursingId,id:id,name:name,operation:'退出',date:now,isok:'正常'})
+                c.onsuccess = function (e) {
+                   var  result = e.target.result;
+                }
+
             //     var cursor = event.target.result;
             //     if (cursor) {
             //         if (cursor.value.id == id) {
@@ -267,6 +277,8 @@
             //         cursor.continue()
             //     }
             }
+
+
 
             /* 更改床位信息*/
 

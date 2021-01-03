@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../js/jquery-3.5.1.min.js"></script>
+    <style>
+        table tr td{
+            border:1px solid #F03;
+            text-align:center;
+            line-height:30px;
+        }
+        table tr th{
+            border:1px solid #F03;
+            text-align:center;
+            line-height:30px;
+
+        }
+        button, .search-menu, th ,td {
+            font-family: 华文宋体;
+            font-size: 14px;
+        }
+
+        table {
+            width:800px;
+            border-collapse:collapse;
+            margin:25px 0;
+        }
+        .search-menu {
+            padding-left: 50px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="search-menu">
+    <th class="search-item">姓名</th>
+    <input class="item" id="vname"></input>
+    <button onclick="MatchSearch()">搜索</button>
+</div>
+<div class="show-searchIno" id="search-result">
+
+    <table id="older-searchInfo"  class="search-table">
+        <tr>
+            <th>身份证号</th>
+            <th>姓名</th>
+            <th>操作</th>
+            <th>时间</th>
+            <th>状态</th>
+        </tr>
+    </table>
+</div>
+
+
+<script>
+    var NursingId = parseInt(sessionStorage.getItem("yid"));
+    var olderNursinglist = new Array();
+    //向服务器发送请求
+    searchInfo_odler_request();
+    function searchInfo_odler_request() {
+        var indexedDB = window.indexedDB;
+        var db;
+        if (!indexedDB) {
+            window.alert("你的浏览器不支持IndexedDB");
+        }
+
+        //打开数据库
+        var request = window.indexedDB.open("yanglao", 1);
+        request.onerror = function (event) {
+            console.log('数据库打开报错');
+        };
+        request.onupgradeneeded = function (e) {
+            db = event.target.result;
+            console.log("版本变化");
+
+        }
+        request.onsuccess = function (event) {
+            db = event.target.result;
+            var store = db.transaction(['yanglaoyuanolder_active'], 'readonly').objectStore('yanglaoyuanolder_active');
+            var c = store.index('yid').openCursor(IDBKeyRange.only(NursingId));//打开游标
+            c.onsuccess = function (e) {//成功执行回调
+                var cursor = e.target.result;
+                if (cursor) {//如果存在
+                    var older = cursor.value;
+                        olderNursinglist.push(older);
+                        var name = older.name;
+                        var id = older.id;
+                        var operation = older.operation;
+                        var date = older.date;
+                        var isok = older.isok;
+                        var html = "<tr>";
+                        html +='<td>' + id + '</td>';
+                        html +='<td>' + name + '</td>';
+                        html += '<td>' + operation + '</td>';
+                        html +=  '<td>' + date + '</td>';
+                        html +=  '<td>' + isok + '</td>';
+                        html += "</tr>";
+                        $("#older-searchInfo").append(html);
+                    cursor.continue();//继续下一个
+                }
+            }
+        }
+    }
+
+    function MatchSearch(){
+        var html ="<tr><th>身份证号</th><th>姓名</th><th>操作</th><th>时间</th><th>状态</th></tr>"
+        var vname = $("#vname").val();
+
+        if(vname ==''){
+            alert("请输入内容！")
+        }else{
+
+        for (var i =0;i<olderNursinglist.length;i++){
+            var older = olderNursinglist[i];
+            if(older.name.indexOf(vname)!=-1){
+                var name = older.name;
+                var id = older.id;
+                var operation = older.operation;
+                var date = older.date;
+                var isok = older.isok;
+                html += "<tr>";
+                html +='<td>' + id + '</td>';
+                html +='<td>' + name + '</td>';
+                html += '<td>' + operation + '</td>';
+                html +=  '<td>' + date + '</td>';
+                html +=  '<td>' + isok + '</td>';
+                html += "</tr>";
+            }
+        }
+        $("#older-searchInfo").empty().append(html);
+    }
+    }
+
+
+
+</script>
+
+
+</body>
+</html>
