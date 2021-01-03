@@ -10,7 +10,7 @@
             display: none;
         }
         .title{
-            margin: 0 280px;
+            margin: 0 350px;
         }
 
         table tr td{
@@ -43,7 +43,7 @@
     </style>
 </head>
 <body>
-<h3 class="title">当前收到的加入申请如下</h3>
+<h3 class="title">入住申请</h3>
 <div class="show-request" id="request-result">
     <table id="older-request" class="request-table">
         <tr>
@@ -59,11 +59,6 @@
 </div>
 <script>
     var NursingId = parseInt(sessionStorage.getItem("yid"));
-
-    var birthday, name, gender;
-    var yname;
-    var bid, type;
-    var id;
 
     var birthday, name, gender;
     var yname;
