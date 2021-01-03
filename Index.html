@@ -117,24 +117,7 @@
         db = event.target.result;
         console.log('数据库打开成功');
         //公安户口数据导入
-        addhukou();
-        //社区数据导入
-        addshequ();
-        addshequlaoren();
-        //养老院数据导入
-        addyanglaoyuan();
-        addminzhengyanglaoyuan();
-        addyanglaoyuanlaoren();
-
-        //银行数据导入
-        addbank();
-        //老人坐标数据导入
-        addlatlng();
-        //病历数据导入
-        addbingli();
-        //创建空请求列表
-        //addqingqiu();
-        addyanglaoyuanbed();
+ 
     }
     request.onupgradeneeded = function (event) {
 
@@ -203,7 +186,29 @@
             objectStore.createIndex('id', 'id', {unique: false});
         }
         ;
-        //add();
+        setTimeout(()=>{
+            addhukou();
+            //社区数据导入
+            addshequ();
+            addshequlaoren();
+            //养老院数据导入
+            addyanglaoyuan();
+            addminzhengyanglaoyuan();
+            addyanglaoyuanlaoren();
+
+            //银行数据导入
+            addbank();
+            //老人坐标数据导入
+            addlatlng();
+            //病历数据导入
+            addbingli();
+            //创建空请求列表
+            //addqingqiu();
+            addyanglaoyuanbed();
+            //add();
+        },500);
+
+
     }
 
     //公安-户口
