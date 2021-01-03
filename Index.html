@@ -181,9 +181,9 @@
         }
         ;
         if (!db.objectStoreNames.contains("shenqingyly")) {
-            objectStore = db.createObjectStore("shenqingyly", {autoIncrement: true});
+            objectStore = db.createObjectStore("shenqingyly", {keyPath: 'id'});
             objectStore.createIndex('yid', 'yid', {unique: false});
-            objectStore.createIndex('id', 'id', {unique: false});
+            //objectStore.createIndex('id', 'id', {unique: false});
         }
         ;
         setTimeout(()=>{

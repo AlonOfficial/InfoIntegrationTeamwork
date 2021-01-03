@@ -141,22 +141,24 @@
         id = $(this).parent().siblings().eq(0).text();
         type = $(this).parent().siblings().eq(2).text();
         //进行符合条件的数据进行删除
-        var store = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly');
-        var c = store.index('id').openCursor(IDBKeyRange.only(parseInt(id)));
-        c.onerror = function (event) {
-            console.log('删除失败');
-        };
-        c.onsuccess = function (event) {
-            var cursor = event.target.result;
-            if (cursor) {
+        var store = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly').delete(parseInt(id));
+        window.alert("删除成功");
 
-                if (cursor.value.date == date) {
-                    cursor.delete();
-                    alert('删除成功');
-                }
-                cursor.continue()
-            }
-        }
+        // var c = store.index('id').openCursor(IDBKeyRange.only(parseInt(id)));
+        // c.onerror = function (event) {
+        //     console.log('删除失败');
+        // };
+        // c.onsuccess = function (event) {
+        //     var cursor = event.target.result;
+        //     if (cursor) {
+
+        //         if (cursor.value.date == date) {
+        //             cursor.delete();
+        //             alert('删除成功');
+        //         }
+        //         cursor.continue()
+        //     }
+        // }
         $(this).parent().parent().remove();
     });
 
@@ -313,18 +315,19 @@
     //删除已经接受的请求
     function delete_apply(id) {
         //进行符合条件的数据进行删除
-        var store = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly');
-        var c = store.index('id').openCursor(IDBKeyRange.only(parseInt(id)));
-        c.onerror = function (event) {
-            console.log('删除失败');
-        };
-        c.onsuccess = function (event) {
-            var cursor = event.target.result;
-            if (cursor) {
-                cursor.delete();
-                cursor.continue()
-            }
-        }
+        var store = db.transaction('shenqingyly', "readwrite").objectStore('shenqingyly').delete(parseInt(id));
+        window.alert("删除成功");
+        //var c = store.index('id').openCursor(IDBKeyRange.only(parseInt(id)));
+        // c.onerror = function (event) {
+        //     console.log('删除失败');
+        // };
+        // c.onsuccess = function (event) {
+        //     var cursor = event.target.result;
+        //     if (cursor) {
+        //         cursor.delete();
+        //         cursor.continue()
+        //     }
+        // }
     }
 
     function process(id) {
