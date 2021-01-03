@@ -236,12 +236,13 @@
 
     $(document).on('click', '#delete', function () {
         var id = $(this).siblings().eq(0).text();
+
         var type =$(this).siblings().eq(2).text();
         var bid =$(this).siblings().eq(4).text();
 
 
         //打开数据库
-        var request = window.indexedDB.open("yanglao", 1);
+        var request = window.indexedDB.open("yanglao");
         request.onerror = function (event) {
             console.log('数据库打开报错');
         };
@@ -249,20 +250,22 @@
             db = event.target.result;
 
             /* 删除养老院老人信息*/
-            var store = db.transaction('yanglaoyuanlaoren', "readwrite").objectStore('yanglaoyuanlaoren');
-            var c = store.index('yid').openCursor(IDBKeyRange.only(parseInt(NursingId)));
-            c.onerror = function (event) {
-                console.log('删除失败');
-            };
+            var c = db.transaction('yanglaoyuanlaoren', "readwrite").objectStore('yanglaoyuanlaoren').delete(parseInt(id));
+            //window.alert("删除成功！");
+            // var c = store.index('yid').openCursor(IDBKeyRange.only(parseInt(NursingId)));
+            // c.onerror = function (event) {
+            //     console.log('删除失败');
+            // };
             c.onsuccess = function (event) {
-                var cursor = event.target.result;
-                if (cursor) {
-                    if (cursor.value.id == id) {
-                        cursor.delete();
-                        alert("删除成功！");
-                    }
-                    cursor.continue()
-                }
+                window.alert("删除成功！");
+            //     var cursor = event.target.result;
+            //     if (cursor) {
+            //         if (cursor.value.id == id) {
+            //             cursor.delete();
+            //             alert("删除成功！");
+            //         }
+            //         cursor.continue()
+            //     }
             }
 
             /* 更改床位信息*/

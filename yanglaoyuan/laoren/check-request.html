@@ -160,7 +160,7 @@
         $(this).parent().parent().remove();
     });
 
-    <!--接受操作处理-->
+    // <!--接受操作处理-->
     $(document).on('click', '#confirm', function () {
 
         var sid = $(this).parent().siblings().eq(0).text();
@@ -174,7 +174,7 @@
         get_bed(NursingId,type)
         setTimeout(() => {
             process(sid);
-        }, 1000);
+        }, 500);
 
 
 

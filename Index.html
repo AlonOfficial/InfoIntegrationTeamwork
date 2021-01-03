@@ -410,7 +410,7 @@
 
     //养老院-床位
     function addyanglaoyuanbed() {
-        var res = db.transaction(['yanglaoyuanbed'], 'readwrite').objectStore("yanglaoyuanbed").get(1);
+        var res = db.transaction(['yanglaoyuanbed'], 'readwrite').objectStore("yanglaoyuanbed").index("yid").get(1);
         console.log(res);
 
         res.onerror =function (e) {
