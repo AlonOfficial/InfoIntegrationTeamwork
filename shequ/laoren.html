@@ -54,6 +54,9 @@
     </div>
 
     <script>
+        var numMale = 0;
+        var numFemale = 0;
+
         var sid = parseInt(sessionStorage.getItem("sid"));
         console.log(sid);
 
@@ -114,6 +117,13 @@
                             + '<td>' + cursor.value.others + '</td>'
                             + '<td style = "color:red" onclick = detailInfo(' + result.id + ')>' + '详情' + '</td>'
                             + '<td style = "color:red" onclick = deleteID(' + result.id + ')>' + '删除' + '</td>';
+
+                            if (result.gender == '男') {
+                            numMale += 1;
+                        }
+                        else {
+                            numFemale += 1;
+                        }
 
 
                         tableEntry.appendChild(tableRow);
@@ -182,8 +192,7 @@
         //绘制统计图
         var sid = parseInt(sessionStorage.getItem("sid"));
 
-        var numMale = 0;
-        var numFemale = 0;
+
         var olderNursinglist = new Array();
         var ageArray = new Array();
         //向服务器发送请求
@@ -216,12 +225,6 @@
                     var older = cursor.value;
                     if (older.sid == sid) {
                         olderNursinglist.push(older);
-                        if (older.gender == '男') {
-                            numMale += 1;
-                        }
-                        else {
-                            numFemale += 1;
-                        }
                     }
                     cursor.continue();//继续下一个
                 }
@@ -234,7 +237,7 @@
             // 指定图表的配置项和数据 放在option对象里
             var option = {
                 title: {
-                    text: '养老院老人性别分布'
+                    text: '社区老人性别分布'
                 },
                 tooltip: {},
                 series: [{
@@ -276,7 +279,7 @@
             // 2.指定图表的配置项和数据 放在option对象里面
             var option = {
                 title: {
-                    text: '养老院老人年龄分布情况'
+                    text: '社区老人年龄分布情况'
                 },
                 tooltip: {},
                 legend: {
