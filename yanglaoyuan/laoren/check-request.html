@@ -135,7 +135,7 @@
 
 
 <script>
-
+    var name;
     $(document).on('click', '#delete', function () {
 
         id = $(this).parent().siblings().eq(0).text();
@@ -165,17 +165,18 @@
     // <!--接受操作处理-->
     $(document).on('click', '#confirm', function () {
 
-        var sid = $(this).parent().siblings().eq(0).text();
-        id = sid;
+        id = $(this).parent().siblings().eq(0).text();
+        id = parseInt(id);
+        //id = sid;
         type = $(this).parent().siblings().eq(2).text();
 
 
-        get_hukou(sid);
+        get_hukou(id);
         get_yanglaoyuan(NursingId);
 
         get_bed(NursingId,type)
         setTimeout(() => {
-            process(sid);
+            process(id);
         }, 500);
 
 
@@ -183,7 +184,7 @@
     });
 
 
-    function get_hukou(sid) {
+    function get_hukou(id) {
         var request = window.indexedDB.open("yanglao", 1);
         request.onerror = function (event) {
             console.log('数据库打开报错');
@@ -191,7 +192,7 @@
         request.onsuccess = function (event) {
             db_hukou = event.target.result;
             // //户口表操作 获取生日、姓名、性别
-            var res = db_hukou.transaction(['hukou'], 'readonly').objectStore('hukou').get(sid);
+            var res = db_hukou.transaction(['hukou'], 'readonly').objectStore('hukou').get(id);
             res.onerror = function (event) {
                 console.log('事务失败');
             };
@@ -290,7 +291,7 @@
         c.onsuccess = function (event) {
             var cursor = event.target.result;
             if (cursor) {
-                if(cursor.value.bid ==id){
+                if(cursor.value.bid ==bid){
                     cursor.delete();
                 }
                 cursor.continue()
