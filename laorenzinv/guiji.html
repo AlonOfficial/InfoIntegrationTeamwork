@@ -24,13 +24,9 @@
 
 <div class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
     <div id="cesiumContainer", class="fullSize"></div>
-    <input class="cesium-button" id = "startTime" onclick="SelectDate(this,'yyyy-MM-dd hh:mm:ss')" type="button" value="start time">
-    <input class="cesium-button" id ="endTime" onclick="SelectDate(this,'yyyy-MM-dd hh:mm:ss')" type="button" value="end time">
-    <select id="selectdid" class="cesium-button">
-        <option value="88010E2005002F5A" selected="selected">88010E2005002F5A</option>
-        <option value="88010E20050044D8">88010E20050044D8</option>
-    </select>
-    <input id="refresh" type="button" value="let's go" class="cesium-button" onclick="showTrace()")>
+    <input class="cesium-button" id = "startTime" onclick="SelectDate(this,'yyyy-MM-dd hh:mm:ss')" type="button" value="开始时间">
+    <input class="cesium-button" id ="endTime" onclick="SelectDate(this,'yyyy-MM-dd hh:mm:ss')" type="button" value="结束时间">
+    <input id="refresh" type="button" value="查看轨迹" class="cesium-button" onclick="showTrace()")>
 </div>
 
 
@@ -54,8 +50,10 @@
         //删除之前的轨迹
         viewer.dataSources.removeAll();
         viewer.entities.removeAll();
+        var startTime = $("#startTime").attr("value");
+        var endtime = $("#endTime").attr("value");
         //获取参数
-        var did = selectdid.value;
+        var did = "88010E2005002F5A";
         let utcBegin = String((new Date(startTime)).getTime());
         let utcEnd =   String((new Date(endtime)).getTime());
         //获取数据及显示点、线
