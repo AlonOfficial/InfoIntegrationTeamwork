@@ -25,7 +25,7 @@
 </style>
 
 <body>
-    <div class="search" id="search" style="width: 100%; height: 50px; border: 1px solid;">
+    <div class="search" style="width: 100%; height: 30px; border: 1px solid; margin-bottom: 5px;">
         <b class="txt">身份证号:</b>
         <input type="text" name="sid" id="sid" class="shuru">
         <b class="txt">姓名:</b>
@@ -33,29 +33,29 @@
         <input type="submit" onclick="search()" value="查询" id="search" class="shuru">
         <input type="submit" onclick="undosearch()" value="取消" id="undosearch" class="shuru">
     </div>
-    <div style="width: 80%; height:300px; overflow: scroll;">
+    <div style="height:300px; overflow: scroll;">
         <table id="sinfo" border="1px"></table>
     </div>
-    <div style="height: 300px;">
-        <div style="width: 600px; height: 300px; border: 1px solid; float: left; font-size: 30px;">
+    <div style="height: 100px; margin-bottom: 5px;">
+        <div style="width: 70%;  border: 1px solid; float: left; font-size: 30px;">
             <p style="float: left; ">这里是第</p>
             <p id="01" style="float: left; "></p>
             <p style="float: left; ">号老人的打分情况</p>
         </div>
-        <div style="width: 300px; height: 300px; border: 1px solid; float: left; font-size: 50px;">
-            <p style="float: left;">综合得分:</p>
-            <p id="pscore"></p>
+        <div style="width: 29%; margin-left: 5px;  border: 1px solid; float: left; font-size: 40px; height: 100px;">
+            <span style="float: left;">综合得分:</span>
+            <span id="pscore"></span>
         </div>
     </div>
-    <div style="width: 100%; height: 100px; border: 1px solid; font-size: 30px;">
+    <div style="height: 100px; border: 1px solid; font-size: 30px; margin-bottom: 5px;">
         <p style="float: left; ">健康得分:</p>
         <p id="pjkscore"></p>
     </div>
-    <div style="width: 100%; height: 100px; border: 1px solid; font-size: 30px;">
+    <div style="height: 100px; border: 1px solid; font-size: 30px; margin-bottom: 5px;">
         <p style="float: left;">温暖得分:</p>
         <p id="pwnscore"></p>
     </div>
-    <div style="width: 100%; height: 100px; border: 1px solid; font-size: 30px;">
+    <div style="height: 100px; border: 1px solid; font-size: 30px;">
         <p style="float: left;">温饱得分:</p>
         <p id="pwbscore"></p>
     </div>
@@ -71,12 +71,7 @@
     request.onsuccess = function (event) {
         db = event.target.result;
         //main
-        //计算各项分值（应该是在读取数据之后的）
-
-
-
-
-        //jia
+        //加载表格
         loadAll();
     }
 
@@ -407,6 +402,7 @@
         $("#sinfo").html(html0);
         var sid = $("#sid").val();
         var sname = $("#sname").val();
+        var idfromname;
         //根据标签减速文本
         table = document.getElementById("sinfo");
         tr = table.getElementsByTagName("tr");
@@ -432,12 +428,13 @@
             }
         }
         setTimeout(() => {
-            console.log("this is sid", sid);
-            countAll(parseInt(sid));
+            var cid = document.getElementById("01").innerHTML;
+            console.log('this is cid',cid);
+            countAll(parseInt(cid));
             setTimeout(() => {
                 count();
-            }, 500);
-        }, 400);
+            }, 400);
+        }, 100);
 
     }
     //取消目前选择状态，清空输入栏
