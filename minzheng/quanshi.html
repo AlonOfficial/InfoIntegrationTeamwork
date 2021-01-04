@@ -271,18 +271,17 @@
                 jkScore[id] = jkBingS[id] * weight.jkBing + jkAgeS[id] * weight.jkAge;
                 wnScore[id] = wnMarriageS[id] * weight.wnMarriage + wnChildS[id] * weight.wnChild;
                 wbScore[id] = wbHouseS[id] * weight.wbHouse + wbBankS[id] * weight.wbBank + wbSpotS[id] * weight.wbSpot;
-                score[id] = 100 - (jkScore[id] + wnScore[id] + wbScore[id]);
-                score[id] = (score[id]-15)*10;
+                score[id] = 100 - (jkScore[id] + wnScore[id] + wbScore[id]);//求反
+                score[id] = (score[id]-15)*10;//乘系数
                 points[(id-1)] = points[(id-1)].concat([score[id]]);
             }
 
-            //显示地图
+            //显示热力图
             var dom = document.getElementById("container");
             var myChart = echarts.init(dom);
             var app = {};
             option = null;
 
-                //points = [[120.14066322374, 30.240018034923, 10], [120.14322240845, 30.236064370321, 0]];
                 console.log(points);
                 myChart.setOption(option = {
                     animation: false,

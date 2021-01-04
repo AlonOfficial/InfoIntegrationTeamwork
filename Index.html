@@ -221,17 +221,12 @@
     function addhukou() {
         $(document).ready(function () {
             $.get('source/hukou.txt', function (theData) {
-                //console.log(theData);
                 theItems = theData.split('\n');
-                //test = theItems[1].split(' ');
                 var theList = '';
                 var theListItem;
                 //从第二行开始读入数据
                 for (i = 1; i < theItems.length; i++) {
                     temp = theItems[i].split(' ');
-                    // var name = temp[0];
-                    // var id = temp[1];
-                    // var birthday =
 
                     var request = db.transaction(['hukou'], 'readwrite')
                         .objectStore('hukou')
@@ -240,9 +235,7 @@
                             polistatus: temp[5], birthplace: temp[6], address: temp[7]
                         });
 
-                }
-                ;
-                // $('#fileData').html(theList);
+                };
             });
         });
     }
@@ -303,7 +296,7 @@
                 dataType: "xml",
                 success: xmlParser
             });
-        });
+        }); 
 
         //自定义解析xmlParser函数
         function xmlParser(xml) {
