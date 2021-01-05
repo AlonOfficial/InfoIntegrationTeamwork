@@ -99,7 +99,7 @@
                 }
 
                 else {
-                    //查询是否在养老院
+                    //若未在社区，转而查询是否在养老院
                     var res2 = db.transaction(['yanglaoyuanlaoren'], 'readonly').objectStore('yanglaoyuanlaoren').get(id);
                     res2.onerror = function (event) {
                         console.log('事务失败');
@@ -114,12 +114,6 @@
                             $("#04").text("居住状况：未在社区或养老院");
 
                             document.getElementById("tijiao").style.display="inline";
-
-                            // var submitbutton = document.createElement('div');
-                            // submitbutton.innerHTML =
-                            
-                            // '<input type="submit" value="删除" onclick=deleteID() >';
-                            // mybutton.appendChild(submitbutton);
                         }
                     }
                 }
